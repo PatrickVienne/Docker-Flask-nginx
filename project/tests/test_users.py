@@ -1,4 +1,4 @@
-# project/test.py
+# project/test_users.py
 
 
 import unittest
@@ -35,14 +35,9 @@ class ProjectTests(unittest.TestCase):
     #### tests ####
     ###############
 
-    def test_main_page(self):
-        response = self.app.get('/', follow_redirects=True)
-        self.assertIn(b'Welcome to the Kennedy Family Recipe App!', response.data)
-        self.assertIn(b'This site describes our favorite family recipes!', response.data)
-        self.assertIn(b'Breakfast Recipes', response.data)
-        self.assertIn(b'Lunch Recipes', response.data)
-        self.assertIn(b'Dinner Recipes', response.data)
-        self.assertIn(b'Dessert Recipes', response.data)
+    def test_login_page(self):
+        response = self.app.get('/login', follow_redirects=True)
+        self.assertIn(b'Future site for logging into Kennedy Family Recipes!', response.data)
 
 
 if __name__ == "__main__":
