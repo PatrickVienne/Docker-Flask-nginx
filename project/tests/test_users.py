@@ -25,12 +25,6 @@ class ProjectTests(unittest.TestCase):
         pass
 
 
-    ########################
-    #### helper methods ####
-    ########################
-
-
-
     ###############
     #### tests ####
     ###############
