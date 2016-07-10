@@ -2,6 +2,9 @@ from project import db
 from project.models import Recipe
 
 
+# drop all of the existing database tables
+db.drop_all()
+
 # create the database and the database table
 db.create_all()
 

@@ -10,7 +10,7 @@ from project import app, db
 TEST_DB = 'test.db'
 
 
-class ProjectTests(unittest.TestCase):
+class RecipesTests(unittest.TestCase):
 
     ############################
     #### setup and teardown ####
