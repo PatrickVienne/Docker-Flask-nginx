@@ -32,15 +32,21 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="recipes-navbar-collapse-1">
           <ul class="nav navbar-nav">
-            <li><a href="#">Breakfast Recipes</a></li>
-            <li><a href="#">Lunch Recipes</a></li>
-            <li><a href="#">Dinner Recipes</a></li>
-            <li><a href="#">Dessert Recipes</a></li>
-            <li><a href="{{ url_for('recipes.add_recipe') }}">Add Recipe</a></li>
-            <li><a href="{{ url_for('users.register') }}">Register</a></li>
+            {% if current_user.is_authenticated %}
+              <li><a href="{{ url_for('recipes.index') }}">Public Recipes</a></li>
+              <li><a href="{{ url_for('recipes.add_recipe') }}">Add Recipe</a></li>
+              <li><a href="{{ url_for('users.logout') }}">Log Out</a></li>
+            {% else %}
+              <li><a href="{{ url_for('users.register') }}">Register</a></li>
+              <li><a href="{{ url_for('users.login') }}">Log In</a></li>
+            {% endif %}
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Welcome!</a></li>
+            {% if current_user.is_authenticated %}
+              <li><a href="#">Welcome, {{current_user.email}}!</a></li>
+            {% else %}
+              <li><a href="#">Welcome!</a></li>
+            {% endif %}
           </ul>
         </div><!--/.nav-collapse -->
       </div><!-- /.container -->

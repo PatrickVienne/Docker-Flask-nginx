@@ -1,16 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Kennedy Family Recipe App">
-    <meta name="author" content="Patrick Kennedy">
-    <title>Kennedy Family Recipe App</title>
-    <!-- styles -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-  </head>
-  <body>
-    <h2>Future site for logging into Kennedy Family Recipes!</h2>
-  </body>
-</html>
+{% extends "layout.html" %}
+{% from "_form_macros.html" import render_field %}
+
+{% block content %}
+
+<div class="user-registration">
+  <div class="page-header">
+    <h2>Log In</h2>
+  </div>
+  <form action="{{ url_for('users.login') }}" method="post">
+    {{ form.csrf_token }}
+    <dl>
+      {{ render_field(form.email, placeholder="Email address") }}
+      {{ render_field(form.password, placeholder="Password") }}
+    </dl>
+    <button class="btn btn-sm btn-success" type="submit">Log In</button>
+  </form>
+  <br>
+  <p><em>Need an account? </em><a href="/register">Signup!!</a></p>
+</div>
+
+{% endblock %}
