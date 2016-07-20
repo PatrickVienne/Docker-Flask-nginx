@@ -20,7 +20,7 @@ db.session.add(recipe3)
 db.session.commit()
 
 # insert user data
-user1 = User('patkennedy79@gmail.com', 'password1234')
+user1 = User('patkennedy79@yahoo.com', 'password1234')
 user2 = User('kennedyfamilyrecipes@gmail.com', 'PaSsWoRd')
 user3 = User('blaa@blaa.com', 'MyFavPassword')
 db.session.add(user1)
