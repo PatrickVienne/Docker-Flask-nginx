@@ -29,3 +29,5 @@ db.session.add(user3)
 
 # commit the changes for the recipes
 db.session.commit()
+
+user1.is_correct_password('password1234')
