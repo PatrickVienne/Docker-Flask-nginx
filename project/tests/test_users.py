@@ -84,6 +84,8 @@ class UsersTests(unittest.TestCase):
         response = self.app.get('/login')
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Log In', response.data)
+        self.assertIn(b'Need an account? Signup!!', response.data)
+        self.assertIn(b'Forgot your password? Reset!!', response.data)
 
     def test_valid_login(self):
         self.app.get('/register', follow_redirects=True)
