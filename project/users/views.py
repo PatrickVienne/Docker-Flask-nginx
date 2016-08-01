@@ -236,3 +236,19 @@ def user_email_change():
             except IntegrityError:
                 flash('Error! That email already exists!', 'error')
     return render_template('email_change.html', form=form)
+
+
+@users_blueprint.route('/password_change', methods=["GET", "POST"])
+@login_required
+def user_password_change():
+    form = PasswordForm()
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            user = current_user
+            user.password = form.password.data
+            db.session.add(user)
+            db.session.commit()
+            flash('Password has been updated!', 'success')
+            return redirect(url_for('users.user_profile'))
+
+    return render_template('password_change.html', form=form)
