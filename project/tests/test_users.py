@@ -140,6 +140,43 @@ class UsersTests(unittest.TestCase):
         self.assertIn(b'You should be redirected automatically to target URL:', response.data)
         self.assertIn(b'/login?next=%2Fuser_profile', response.data)
 
+    def test_change_email_address_page(self):
+        self.app.get('/register', follow_redirects=True)
+        self.register('patkennedy79@gmail.com', 'FlaskIsAwesome', 'FlaskIsAwesome')
+        response = self.app.get('/email_change')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Current Email: patkennedy79@gmail.com', response.data)
+        self.assertIn(b'Please enter your new email address:', response.data)
+
+    def test_change_email_address(self):
+        self.app.get('/register', follow_redirects=True)
+        self.register('patkennedy79@gmail.com', 'FlaskIsAwesome', 'FlaskIsAwesome')
+        self.app.post('/email_change', data=dict(email='patkennedy79@blaa.com'), follow_redirects=True)
+        response = self.app.get('/user_profile')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Email Address', response.data)
+        self.assertIn(b'patkennedy79@blaa.com', response.data)
+        self.assertNotIn(b'patkennedy79@gmail.com', response.data)
+
+    def test_change_email_address_with_existing_email(self):
+        self.app.get('/register', follow_redirects=True)
+        self.register('patkennedy79@gmail.com', 'FlaskIsAwesome', 'FlaskIsAwesome')
+        response = self.app.post('/email_change', data=dict(email='patkennedy79@gmail.com'), follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Sorry, that email already exists!', response.data)
+        self.assertIn(b'Current Email: patkennedy79@gmail.com', response.data)
+        self.assertIn(b'Please enter your new email address:', response.data)
+
+    def test_change_email_without_logging_in(self):
+        response = self.app.get('/email_change')
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(b'You should be redirected automatically to target URL:', response.data)
+        self.assertIn(b'/login?next=%2Femail_change', response.data)
+        response = self.app.post('/email_change', data=dict(email='patkennedy79@gmail.com'), follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Log In', response.data)
+        self.assertIn(b'Need an account?', response.data)
+
 
 if __name__ == "__main__":
     unittest.main()
