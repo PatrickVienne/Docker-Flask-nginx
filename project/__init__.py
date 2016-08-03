@@ -2,7 +2,7 @@
 #### imports ####
 #################
 
-from flask import Flask
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
@@ -43,3 +43,16 @@ from project.recipes.views import recipes_blueprint
 app.register_blueprint(users_blueprint)
 app.register_blueprint(recipes_blueprint)
 
+
+############################
+#### custom error pages ####
+############################
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(403)
+def page_not_found(e):
+    return render_template('403.html'), 403
