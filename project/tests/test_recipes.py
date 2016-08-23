@@ -4,7 +4,7 @@
 import os
 import unittest
 
-from project import app, db
+from project import app, db, mail
 from project.models import Recipe, User
 
 
@@ -25,14 +25,15 @@ class RecipesTests(unittest.TestCase):
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + \
             os.path.join(app.config['BASEDIR'], TEST_DB)
         self.app = app.test_client()
+        db.drop_all()
         db.create_all()
 
+        mail.init_app(app)
         self.assertEquals(app.debug, False)
 
     # executed after each test
     def tearDown(self):
-        db.session.remove()
-        db.drop_all()
+        pass
 
 
     ########################
@@ -137,6 +138,32 @@ class RecipesTests(unittest.TestCase):
         self.assertIn(b'ERROR! Recipe was not added.', response.data)
         self.assertIn(b'This field is required.', response.data)
 
+    def test_recipe_detail_public_recipe(self):
+        self.register_user()
+        self.add_recipes()
+        self.logout_user()
+        response = self.app.get('/recipe/1', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Hamburgers', response.data)
+        self.assertIn(b'Public', response.data)
+        self.assertIn(b'patkennedy79@gmail.com', response.data)
+
+    def test_recipe_detail_private_recipe(self):
+        self.register_user()
+        self.add_recipes()
+        response = self.app.get('/recipe/3', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Tacos', response.data)
+        self.assertIn(b'Private', response.data)
+        self.assertIn(b'patkennedy79@gmail.com', response.data)
+
+    def test_recipe_detail_private_recipe_invalid_user(self):
+        self.register_user()
+        self.add_recipes()
+        self.logout_user()
+        response = self.app.get('/recipe/3', follow_redirects=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Error! Incorrect permissions to access this recipe.', response.data)
 
 if __name__ == "__main__":
     unittest.main()

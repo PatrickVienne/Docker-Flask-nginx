@@ -7,7 +7,7 @@
 from flask import render_template, Blueprint, request, redirect, url_for, flash
 from flask_login import current_user, login_required
 from project import db
-from project.models import Recipe
+from project.models import Recipe, User
 from .forms import AddRecipeForm
 
 
@@ -29,6 +29,11 @@ def flash_errors(form):
                 getattr(form, field).label.text,
                 error
             ), 'info')
+
+
+def get_all_recipes_with_users():
+    # SQL: SELECT * FROM recipes JOIN users ON recipes.user_id = users.id;
+    return db.session.query(Recipe, User).join(User).all()
 
 
 ################
@@ -65,3 +70,18 @@ def add_recipe():
 
     return render_template('add_recipe.html', form=form)
 
+
+@recipes_blueprint.route('/recipe/<recipe_id>')
+def recipe_details(recipe_id):
+    recipe_with_user = db.session.query(Recipe, User).join(User).filter(Recipe.id == recipe_id).first()
+    if recipe_with_user is not None:
+        if recipe_with_user.Recipe.is_public:
+            return render_template('recipe_detail.html', recipe=recipe_with_user)
+        else:
+            if current_user.is_authenticated and recipe_with_user.Recipe.user_id == current_user.id:
+                return render_template('recipe_detail.html', recipe=recipe_with_user)
+            else:
+                flash('Error! Incorrect permissions to access this recipe.', 'error')
+    else:
+        flash('Error! Recipe does not exist.', 'error')
+    return redirect(url_for('recipes.public_recipes'))

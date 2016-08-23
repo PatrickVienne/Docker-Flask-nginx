@@ -20,7 +20,7 @@ class Recipe(db.Model):
         self.user_id = user_id
 
     def __repr__(self):
-        return '<title {}'.format(self.name)
+        return '<id: {}, title: {}, user_id: {}>'.format(self.id, self.recipe_title, self.user_id)
 
 
 class User(db.Model):
@@ -38,6 +38,7 @@ class User(db.Model):
     last_logged_in = db.Column(db.DateTime, nullable=True)
     current_logged_in = db.Column(db.DateTime, nullable=True)
     role = db.Column(db.String, default='user')
+    recipes = db.relationship('Recipe', backref='user', lazy='dynamic')
 
     def __init__(self, email, plaintext_password, email_confirmation_sent_on=None, role='user'):
         self.email = email
@@ -84,5 +85,5 @@ class User(db.Model):
         return str(self.id)
 
     def __repr__(self):
-        return '<User {0}>'.format(self.name)
+        return '<User {}>'.format(self.email)
 
