@@ -68,10 +68,10 @@ def add_recipe():
         flash('request.files: {}'.format(request.files), 'info')
         # if form.validate_on_submit() and 'image' in request.files:
         if form.validate_on_submit():
-            filename = secure_filename(form.recipe_image.data.filename)
+            # filename = secure_filename(form.recipe_image.data.filename)
             # image = request.files.get('image')
             # filename = images.save(request.files['image'])
-            # filename = images.save(image)
+            filename = images.save(request.files['recipe_image'])
             url = images.url(filename)
             flash('Saved image with filename: {} and url: {}'.format(filename, url), 'success')
             new_recipe = Recipe(form.recipe_title.data, form.recipe_description.data, current_user.id, True, filename, url)
