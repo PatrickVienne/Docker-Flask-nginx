@@ -66,7 +66,7 @@ def add_recipe():
         if form.validate_on_submit():
             filename = images.save(request.files['recipe_image'])
             url = images.url(filename)
-            new_recipe = Recipe(form.recipe_title.data, form.recipe_description.data, current_user.id, True, filename, url)
+            new_recipe = Recipe(form.recipe_title.data, form.recipe_description.data, current_user.id, form.recipe_public.data, filename, url)
             db.session.add(new_recipe)
             db.session.commit()
             flash('New recipe, {}, added!'.format(new_recipe.recipe_title), 'success')

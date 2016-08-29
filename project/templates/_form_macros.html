@@ -23,3 +23,16 @@
   {% endif %}
   </dd>
 {% endmacro %}
+
+
+{% macro render_boolean_field(field) %}
+  <dd>{{ field(**kwargs)|safe }} {{ field.label }}
+  {% if field.errors %}
+    <span class="error">
+    {% for error in field.errors %}
+      {{ error }}
+    {% endfor %}
+    </span>
+  {% endif %}
+  </dd>
+{% endmacro %}
