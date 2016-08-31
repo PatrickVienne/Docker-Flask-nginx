@@ -44,7 +44,7 @@ def get_all_recipes_with_users():
 
 @recipes_blueprint.route('/')
 def public_recipes():
-    all_public_recipes = Recipe.query.filter_by(is_public=True)
+    all_public_recipes = Recipe.query.filter(Recipe.is_public == True, Recipe.image_url != None).order_by(Recipe.rating.desc()).limit(4)
     return render_template('public_recipes.html', public_recipes=all_public_recipes)
 
 
@@ -72,7 +72,8 @@ def add_recipe():
                                 form.recipe_public.data,
                                 filename,
                                 url,
-                                form.recipe_type.data)
+                                form.recipe_type.data,
+                                form.recipe_rating.data or None)
             db.session.add(new_recipe)
             db.session.commit()
             flash('New recipe, {}, added!'.format(new_recipe.recipe_title), 'success')

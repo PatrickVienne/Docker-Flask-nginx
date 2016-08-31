@@ -2,26 +2,26 @@
 {% block content %}
 
 <div class="user-profile">
-  <div class="page-header">
-    <h2>Public Recipes</h2>
-  </div>
+  <div class="container">
+    <div class="jumbotron">
+      <h1>Kennedy Family Recipes</h1>
+      <p>Our Favorite Dairy-free and Soy-free Recipes!</p>
+    </div>
 
-  <table class="table table-striped" id="owned_stock_table">
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
+    <div class="row">
       {% for recipe in public_recipes %}
-      <tr>
-        <td><a href="{{ url_for('recipes.recipe_details', recipe_id=recipe.id) }}">{{ recipe.recipe_title }}</a></td>
-        <td>{{ recipe.recipe_description }}</td>
-      </tr>
+      <div class="col-xs-6 col-md-3">
+        <tr>
+          <td><a href="{{ url_for('recipes.recipe_details', recipe_id=recipe.id) }}">{{ recipe.recipe_title }}</a></td>
+          <a href="{{ url_for('recipes.recipe_details', recipe_id=recipe.id) }}" class="thumbnail">
+            <img src="{{ recipe.image_url }}" alt="{{ recipe.image_filename }}">
+          </a>
+        </tr>
+      </div>
       {% endfor %}
-    </tbody>
-  </table>
+    </div>
+
+  </div> <!-- /container -->
 </div>
 
 {% endblock %}

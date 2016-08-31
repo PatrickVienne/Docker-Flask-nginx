@@ -5,7 +5,6 @@ from datetime import datetime
 
 class Recipe(db.Model):
     """Recipe fields to add:
-        rating = models. PositiveIntegerField(default=1)
         recipe_steps = models.TextField(default='Add recipe steps!')
         ingredients = models.TextField(default='Add ingredients!')
         inspiration (website, book, etc.)
@@ -19,15 +18,17 @@ class Recipe(db.Model):
     image_filename = db.Column(db.String, default=None, nullable=True)
     image_url = db.Column(db.String, default=None, nullable=True)
     recipe_type = db.Column(db.String, default=None, nullable=True)
+    rating = db.Column(db.Integer, default=None, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    def __init__(self, title, description, user_id, is_public, image_filename=None, image_url=None, type=None):
+    def __init__(self, title, description, user_id, is_public, image_filename=None, image_url=None, type=None, rating=None):
         self.recipe_title = title
         self.recipe_description = description
         self.is_public = is_public
         self.image_filename = image_filename
         self.image_url = image_url
         self.recipe_type = type
+        self.rating = rating
         self.user_id = user_id
 
     def __repr__(self):
