@@ -10,4 +10,4 @@ __pycache__/
 .idea/
 
 # Instance Folder - used for configuration parameters
-/instance
+/web/instance
