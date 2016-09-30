@@ -1,11 +1,21 @@
 from project import db, bcrypt
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
 from datetime import datetime
+from markdown import markdown
+import bleach
+
+
+# Allowable HTML tags
+allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+                'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+                'h1', 'h2', 'h3', 'p']
 
 
 class Recipe(db.Model):
     """Recipe fields to add:
         inspiration (website, book, etc.)
+        date created
+        date last modified
     """
     __tablename__ = "recipes"
 
@@ -18,7 +28,9 @@ class Recipe(db.Model):
     recipe_type = db.Column(db.String, default=None, nullable=True)
     rating = db.Column(db.Integer, default=None, nullable=True)
     ingredients = db.Column(db.Text, default=None, nullable=True)
+    ingredients_html = db.Column(db.Text, default=None, nullable=True)
     recipe_steps = db.Column(db.Text, default=None, nullable=True)
+    recipe_steps_html = db.Column(db.Text, default=None, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     def __init__(self, title, description, user_id, is_public, image_filename=None, image_url=None, recipe_type=None,
@@ -36,6 +48,21 @@ class Recipe(db.Model):
 
     def __repr__(self):
         return '<id: {}, title: {}, user_id: {}>'.format(self.id, self.recipe_title, self.user_id)
+
+    @staticmethod
+    def on_changed_ingredients(target, value, oldvalue, iterator):
+        if value:
+            target.ingredients_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'),
+                                                                  tags=allowed_tags, strip=True))
+
+    @staticmethod
+    def on_changed_recipe_steps(target, value, oldvalue, iterator):
+        if value:
+            target.recipe_steps_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'),
+                                                                   tags=allowed_tags, strip=True))
+
+db.event.listen(Recipe.ingredients, 'set', Recipe.on_changed_ingredients)
+db.event.listen(Recipe.recipe_steps, 'set', Recipe.on_changed_recipe_steps)
 
 
 class User(db.Model):

@@ -50,9 +50,7 @@
       <div class="panel panel-primary">
         <div class="panel-heading">Ingredients</div>
         <div class="panel-body">
-          <pre>
-            {{ recipe.Recipe.ingredients }}
-          </pre>
+          {{ recipe.Recipe.ingredients_html | safe }}
         </div>
       </div>
     </div>
@@ -60,7 +58,9 @@
     <div class="col-md-6">
       <div class="panel panel-primary">
         <div class="panel-heading">Recipe Steps</div>
-        <div class="panel-body">{{ recipe.Recipe.recipe_steps }}</div>
+        <div class="panel-body">
+          {{ recipe.Recipe.recipe_steps_html | safe }}
+        </div>
       </div>
     </div>
   </div>

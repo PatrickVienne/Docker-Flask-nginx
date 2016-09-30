@@ -8,6 +8,7 @@ from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
 from flask_mail import Mail
 from flask_uploads import UploadSet, IMAGES, configure_uploads
+from flask_pagedown import PageDown
 
 
 ################
@@ -20,6 +21,7 @@ app.config.from_pyfile('flask.cfg')
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 mail = Mail(app)
+pagedown = PageDown(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
