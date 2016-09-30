@@ -73,7 +73,9 @@ def add_recipe():
                                 filename,
                                 url,
                                 form.recipe_type.data,
-                                form.recipe_rating.data or None)
+                                form.recipe_rating.data,#  or None,
+                                form.recipe_ingredients.data,
+                                form.recipe_steps.data)
             db.session.add(new_recipe)
             db.session.commit()
             flash('New recipe, {}, added!'.format(new_recipe.recipe_title), 'success')

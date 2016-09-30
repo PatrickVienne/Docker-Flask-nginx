@@ -2,7 +2,7 @@
 
 
 from flask_wtf import Form
-from wtforms import StringField, BooleanField, RadioField, IntegerField
+from wtforms import StringField, BooleanField, RadioField, IntegerField, TextAreaField
 from wtforms.validators import DataRequired, NumberRange
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from project import images
@@ -21,3 +21,5 @@ class AddRecipeForm(Form):
                              default='Dinner')
     recipe_rating = IntegerField('Recipe Rating', validators=[NumberRange(min=1, max=5, message='Rating must be between 1 and 5!')])
     recipe_image = FileField('Recipe Image', validators=[FileRequired(), FileAllowed(images, 'Images only!')])
+    recipe_ingredients = TextAreaField('Recipe Ingredients', validators=[DataRequired()], render_kw={"rows": 12, "cols": 100})
+    recipe_steps = TextAreaField('Recipe Steps', validators=[DataRequired()], render_kw={"rows": 12, "cols": 100})
