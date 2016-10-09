@@ -12,5 +12,7 @@ __pycache__/
 # Instance Folder - used for configuration parameters
 /web/instance
 
-# Environment Variable file created for Postgress Docker Container
-postgres.env
+# Initialization files for Postgress Docker Image
+create_db.sh
+create_user.sh
+

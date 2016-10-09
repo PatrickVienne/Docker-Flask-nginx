@@ -1,36 +1,39 @@
-web:
-  restart: always
-  build: ./web
-  expose:
-    - "8000"
-  links:
-    - postgres:postgres
-  volumes:
-    - /usr/src/app/project/static
-  command: /usr/local/bin/gunicorn -w 2 -b :8000 project:app
+version: '2'
 
-nginx:
-  restart: always
-  build: ./nginx
-  ports:
-    - "80:80"
-  volumes:
-    - /www/static
-  volumes_from:
-    - web
-  links:
-    - web:web
+services:
+  web:
+    restart: always
+    build: ./web
+    expose:
+      - "8000"
+    links:
+      - postgres:postgres
+    volumes:
+      - /usr/src/app/project/static
+    command: /usr/local/bin/gunicorn -w 2 -b :8000 project:app
 
-data:
-  image: postgres:9.6
-  volumes:
-    - /var/lib/postgresql
-  command: "true"
+  nginx:
+    restart: always
+    build: ./nginx
+    ports:
+      - "80:80"
+    volumes:
+      - /www/static
+    volumes_from:
+      - web
+    links:
+      - web:web
 
-postgres:
-  restart: always
-  image: postgres:9.6
-  volumes_from:
-    - data
-  ports:
-    - "5432:5432"
+  data:
+    image: postgres:9.6
+    volumes:
+      - /var/lib/postgresql
+    command: "true"
+
+  postgres:
+    restart: always
+    build: ./postgresql
+    volumes_from:
+      - data
+    ports:
+      - "5432:5432"
