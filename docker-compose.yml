@@ -6,8 +6,6 @@ services:
     build: ./web
     expose:
       - "8000"
-    links:
-      - postgres:postgres
     volumes:
       - /usr/src/app/project/static
     command: /usr/local/bin/gunicorn -w 2 -b :8000 project:app
@@ -21,8 +19,6 @@ services:
       - /www/static
     volumes_from:
       - web
-    links:
-      - web:web
 
   data:
     image: postgres:9.6

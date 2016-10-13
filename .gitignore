@@ -12,7 +12,5 @@ __pycache__/
 # Instance Folder - used for configuration parameters
 /web/instance
 
-# Initialization files for Postgress Docker Image
-create_db.sh
-create_user.sh
-
+# Initialization file for Postgress Docker Image
+/postgresql/Dockerfile
