@@ -9,6 +9,8 @@ services:
     volumes:
       - /usr/src/app/project/static
     command: /usr/local/bin/gunicorn -w 2 -b :8000 project:app
+    depends_on:
+      - postgres
 
   nginx:
     restart: always
@@ -18,6 +20,8 @@ services:
     volumes:
       - /www/static
     volumes_from:
+      - web
+    depends_on:
       - web
 
   data:
