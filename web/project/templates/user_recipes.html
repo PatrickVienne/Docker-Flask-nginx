@@ -1,27 +1,19 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<div class="user-profile">
+<div class="user-recipes">
   <div class="page-header">
     <h2>User Recipes</h2>
   </div>
 
-  <table class="table table-striped" id="owned_stock_table">
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for recipe in user_recipes %}
-      <tr>
-        <td><a href="{{ url_for('recipes.recipe_details', recipe_id=recipe.id) }}">{{ recipe.recipe_title }}</a></td>
-        <td>{{ recipe.recipe_description }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <ul class="list-group">
+    {% for recipe in user_recipes %}
+      <a href="{{ url_for('recipes.recipe_details', recipe_id=recipe.id) }}" class="list-group-item list-group-item-action">
+        <h5 class="list-group-item-heading">{{ recipe.recipe_title }}</h5>
+        <p class="list-group-item-text">{{ recipe.recipe_description }}</p>
+      </a>
+    {% endfor %}
+  </ul>
 </div>
 
 {% endblock %}
