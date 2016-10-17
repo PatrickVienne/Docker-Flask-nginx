@@ -6,14 +6,18 @@
     <h2>User Recipes</h2>
   </div>
 
-  <ul class="list-group">
-    {% for recipe in user_recipes %}
-      <a href="{{ url_for('recipes.recipe_details', recipe_id=recipe.id) }}" class="list-group-item list-group-item-action">
-        <h5 class="list-group-item-heading">{{ recipe.recipe_title }}</h5>
-        <p class="list-group-item-text">{{ recipe.recipe_description }}</p>
-      </a>
-    {% endfor %}
-  </ul>
+  {% if user_recipes.count() == 0 %}
+    <h5>No recipes have been created!</h5>
+  {% else %}
+    <ul class="list-group">
+      {% for recipe in user_recipes %}
+        <a href="{{ url_for('recipes.recipe_details', recipe_id=recipe.id) }}" class="list-group-item list-group-item-action">
+          <h5 class="list-group-item-heading">{{ recipe.recipe_title }}</h5>
+          <p class="list-group-item-text">{{ recipe.recipe_description }}</p>
+        </a>
+      {% endfor %}
+    </ul>
+  {% endif %}
 </div>
 
 {% endblock %}

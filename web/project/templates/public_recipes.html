@@ -8,19 +8,21 @@
       <p>Our Favorite Dairy-free and Soy-free Recipes!</p>
     </div>
 
-    <h3>Most Popular Recipes</h3>
-    <div class="row">
-      {% for recipe in public_recipes %}
-      <div class="col-xs-6 col-md-3">
-        <tr>
-          <td><a href="{{ url_for('recipes.recipe_details', recipe_id=recipe.id) }}">{{ recipe.recipe_title }}</a></td>
-          <a href="{{ url_for('recipes.recipe_details', recipe_id=recipe.id) }}" class="thumbnail">
-            <img src="{{ recipe.image_url }}" alt="{{ recipe.image_filename }}">
-          </a>
-        </tr>
+    {% if public_recipes.count() > 0 %}
+      <h3>Most Popular Recipes</h3>
+      <div class="row">
+        {% for recipe in public_recipes %}
+        <div class="col-xs-6 col-md-3">
+          <tr>
+            <td><a href="{{ url_for('recipes.recipe_details', recipe_id=recipe.id) }}">{{ recipe.recipe_title }}</a></td>
+            <a href="{{ url_for('recipes.recipe_details', recipe_id=recipe.id) }}" class="thumbnail">
+              <img src="{{ recipe.image_url }}" alt="{{ recipe.image_filename }}">
+            </a>
+          </tr>
+        </div>
+        {% endfor %}
       </div>
-      {% endfor %}
-    </div>
+    {% endif %}
 
   </div> <!-- /container -->
 </div>

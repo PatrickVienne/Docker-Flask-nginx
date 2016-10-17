@@ -101,3 +101,19 @@ def recipe_details(recipe_id):
     else:
         flash('Error! Recipe does not exist.', 'error')
     return redirect(url_for('recipes.public_recipes'))
+
+
+@recipes_blueprint.route('/delete/<recipe_id>')
+def delete_recipe(recipe_id):
+    recipe = Recipe.query.filter_by(id=recipe_id).first()
+    if recipe is not None:
+        if recipe.user_id == current_user.id:
+            db.session.delete(recipe)
+            db.session.commit()
+            flash('{} was deleted.'.format(recipe.recipe_title), 'success')
+            return redirect(url_for('recipes.user_recipes'))
+        else:
+            flash('Error! Incorrect permissions to delete this recipe.', 'error')
+    else:
+        flash('Error! Recipe does not exist.', 'error')
+    return redirect(url_for('recipes.public_recipes'))

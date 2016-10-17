@@ -4,6 +4,11 @@
 <div class="user-profile">
   <div class="page-header">
     <h2>{{ recipe.Recipe.recipe_title }}</h2>
+    <h5>
+      <a href="#">Edit</a>
+      |
+      <a href="{{ url_for('recipes.delete_recipe', recipe_id=recipe.Recipe.id) }}">Delete</a>
+    </h5>
   </div>
 
   <div class="row">
