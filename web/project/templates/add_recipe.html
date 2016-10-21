@@ -7,22 +7,141 @@
   <div class="page-header">
     <h2>Add a New Recipe</h2>
   </div>
+
+<div class="container">
   <form action="{{ url_for('recipes.add_recipe') }}" method="post" enctype="multipart/form-data">
-    {{ form.csrf_token }}
-    <dl>
-      {{ render_field(form.recipe_title, placeholder="Enter Recipe Title") }}
-      {{ render_field(form.recipe_description, placeholder="Enter Recipe Description") }}
-      {{ render_field(form.recipe_type) }}
-      {{ render_boolean_field(form.recipe_public) }}
-      {{ render_field(form.recipe_rating) }}
-      {{ render_field(form.recipe_image) }}
-      <h5>Preview of rendered HTML for the recipe ingredients and steps is provided below each input field!</h5>
-      {{ render_field(form.recipe_ingredients) }}
-      {{ render_field(form.recipe_steps) }}
-    </dl>
-    <button class="btn btn-sm btn-success" type="submit">Add Recipe</button>
+   {{ form.csrf_token }}
+   <div class="form-group row">
+      <legend for="recipe_title" class="col-form-legend col-sm-2">Title</legend>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="recipe_title" name="recipe_title" placeholder="Enter recipe title...">
+        {% if form.recipe_title.errors %}
+          <span class="error">
+          {% for error in form.recipe_title.errors %}
+            {{ error }}
+          {% endfor %}
+          </span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <legend for="recipe_description" class="col-form-legend col-sm-2">Description</legend>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="recipe_description" name="recipe_description" placeholder="Enter recipe description...">
+        {% if form.recipe_description.errors %}
+          <span class="error">
+          {% for error in form.recipe_description.errors %}
+            {{ error }}
+          {% endfor %}
+          </span>
+        {% endif %}
+      </div>
+    </div>
+
+    <fieldset class="form-group row">
+      <legend for="recipe_type" class="col-form-legend col-sm-2">Recipe Type</legend>
+      <div class="col-sm-6">
+          <div class="form-check">
+            <label class="form-check-label">
+              <input type="radio" class="form-check-input" name="recipe_type" id="recipe_type-0" value="Breakfast">
+              Breakfast
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              <input type="radio" class="form-check-input" name="recipe_type" id="recipe_type-1" value="Lunch">
+              Lunch
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              <input type="radio" class="form-check-input" name="recipe_type" id="recipe_type-2" value="Dinner" checked>
+              Dinner
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              <input type="radio" class="form-check-input" name="recipe_type" id="recipe_type-3" value="Dessert">
+              Dessert
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              <input type="radio" class="form-check-input" name="recipe_type" id="recipe_type-4" value="Side Dish">
+              Side Dish
+            </label>
+          </div>
+          {% if form.recipe_type.errors %}
+            <span class="error">
+            {% for error in form.recipe_type.errors %}
+              {{ error }}
+            {% endfor %}
+            </span>
+          {% endif %}
+      </div>
+    </fieldset>
+
+    <div class="form-group row">
+      <legend for="recipe_rating"class="col-form-legend col-sm-2">Rating</legend>
+      <div class="col-sm-6">
+        <select class="form-control" name="recipe_rating" id="recipe_rating">
+          <option>1 - Worst</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+          <option>5 - Best</option>
+        </select>
+        {% if form.recipe_rating.errors %}
+          <span class="error">
+          {% for error in form.recipe_rating.errors %}
+            {{ error }}
+          {% endfor %}
+          </span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <legend for="recipe_public" class="col-form-legend col-sm-2">Public Recipe?</legend>
+      <div class="col-sm-6">
+        <div class="form-check">
+          <label class="form-check-label">
+            <input class="form-check-input" name="recipe_public" id="recipe_public" type="checkbox">
+            Yes
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <legend for="recipe_image" class="col-form-legend col-sm-2">Recipe Image</legend>
+      <div class="col-sm-6">
+        <input type="file" class="form-control-file" name="recipe_image" id="recipe_image" aria-describedby="fileHelp">
+        <small id="fileHelp" class="form-text text-muted">Select an image for this recipe.</small>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <legend for="recipe_ingredients" class="col-form-legend col-sm-2">Ingredients</legend>
+      <div class="col-sm-6">
+        <textarea class="form-control" name="recipe_ingredients" id="recipe_ingredients" rows="8"></textarea>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <legend for="recipe_steps" class="col-form-legend col-sm-2">Directions</legend>
+      <div class="col-sm-6">
+        <textarea class="form-control" name="recipe_steps" id="recipe_steps" rows="8"></textarea>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <div class="offset-sm-2 col-sm-10">
+        <button type="submit" class="btn btn-success">Add Recipe</button>
+      </div>
+    </div>
   </form>
-  {{ pagedown.include_pagedown() }}
 </div>
 
 {% endblock %}
