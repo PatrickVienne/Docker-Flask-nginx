@@ -10,7 +10,7 @@ from werkzeug.utils import secure_filename
 from werkzeug.datastructures import CombinedMultiDict
 from project import db, images
 from project.models import Recipe, User
-from .forms import AddRecipeForm
+from .forms import AddRecipeForm, EditRecipeForm
 
 
 ################
@@ -104,6 +104,7 @@ def recipe_details(recipe_id):
 
 
 @recipes_blueprint.route('/delete/<recipe_id>')
+@login_required
 def delete_recipe(recipe_id):
     recipe = Recipe.query.filter_by(id=recipe_id).first()
     if recipe is not None:
@@ -117,3 +118,39 @@ def delete_recipe(recipe_id):
     else:
         flash('Error! Recipe does not exist.', 'error')
     return redirect(url_for('recipes.public_recipes'))
+
+
+@recipes_blueprint.route('/edit/<recipe_id>', methods=['GET', 'POST'])
+@login_required
+def edit_recipe(recipe_id):
+    # Cannot pass in 'request.form' to EditRecipeForm constructor, as this will cause 'request.files' to not be
+    # sent to the form.  This will cause EditRecipeForm to not see the file data.
+    # Flask-WTF handles passing form data to the form, so not parameters need to be included.
+    form = EditRecipeForm()
+    recipe = Recipe.query.filter_by(id=recipe_id).first()
+
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            update_counter = 0
+
+            if form.recipe_title.data:
+                update_counter += 1
+                recipe.recipe_title = form.recipe_title.data
+
+            if form.recipe_description.data:
+                update_counter += 1
+                recipe.recipe_description = form.recipe_description.data
+
+            if update_counter > 0:
+                db.session.add(recipe)
+                db.session.commit()
+                flash('Recipe has been updated for {}.'.format(recipe.recipe_title), 'success')
+            else:
+                flash('No updates made to the recipe ({}). Please update at least one field.'.format(recipe.recipe_title), 'error')
+
+            return redirect(url_for('recipes.recipe_details', recipe_id=recipe_id))
+        else:
+            flash_errors(form)
+            flash('ERROR! Recipe was not edited.', 'error')
+
+    return render_template('edit_recipe.html', form=form, recipe=recipe)
