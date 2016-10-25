@@ -18,9 +18,15 @@ class AddRecipeForm(Form):
                                       ('Lunch', 'Lunch Recipe'),
                                       ('Dinner', 'Dinner Recipe'),
                                       ('Dessert', 'Dessert Recipe'),
-                                      ('Side', 'Side Dish')],
+                                      ('Side Dish', 'Side Dish Recipe')],
                              default='Dinner')
-    recipe_rating = IntegerField('Recipe Rating', validators=[NumberRange(min=1, max=5, message='Rating must be between 1 and 5!')])
+    recipe_rating = RadioField('Recipe Rating', validators=[DataRequired()],
+                               choices=[('1', 'Rating 1'),
+                                        ('2', 'Rating 2'),
+                                        ('3', 'Rating 3'),
+                                        ('4', 'Rating 4'),
+                                        ('5', 'Rating 5')],
+                               default='3')
     recipe_image = FileField('Recipe Image', validators=[FileRequired(), FileAllowed(images, 'Images only!')])
     recipe_ingredients = PageDownField('Recipe Ingredients', validators=[DataRequired()], render_kw={"rows": 12, "cols": 100})
     recipe_steps = PageDownField('Recipe Steps', validators=[DataRequired()], render_kw={"rows": 12, "cols": 100})
@@ -35,9 +41,15 @@ class EditRecipeForm(Form):
                                       ('Lunch', 'Lunch Recipe'),
                                       ('Dinner', 'Dinner Recipe'),
                                       ('Dessert', 'Dessert Recipe'),
-                                      ('Side', 'Side Dish')],
+                                      ('Side Dish', 'Side Dish Recipe')],
                              default='Dinner')
-    recipe_rating = IntegerField('Recipe Rating', validators=[])
+    recipe_rating = RadioField('Recipe Rating', validators=[DataRequired()],
+                               choices=[('1', 'Rating 1'),
+                                        ('2', 'Rating 2'),
+                                        ('3', 'Rating 3'),
+                                        ('4', 'Rating 4'),
+                                        ('5', 'Rating 5')],
+                               default='3')
     recipe_image = FileField('Recipe Image', validators=[FileAllowed(images, 'Images only!')])
     recipe_ingredients = PageDownField('Recipe Ingredients', validators=[], render_kw={"rows": 12, "cols": 100})
     recipe_steps = PageDownField('Recipe Steps', validators=[], render_kw={"rows": 12, "cols": 100})

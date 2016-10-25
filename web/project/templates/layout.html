@@ -71,6 +71,11 @@
           <div class="alert alert-info alert-dismissible">{{ info_message }}</div>
         {% endfor %}
 
+<!--
+        {% for debug_message in get_flashed_messages(category_filter=["debug"]) %}
+          <div class="alert alert-info alert-dismissible">{{ debug_message }}</div>
+        {% endfor %}
+-->
         <!-- child template -->
         {% block content %}
         {% endblock %}

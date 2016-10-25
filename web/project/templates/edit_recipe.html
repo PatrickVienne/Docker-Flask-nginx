@@ -14,7 +14,7 @@
     <div class="form-group row">
       <legend for="recipe_title" class="col-form-legend col-sm-2">Title</legend>
       <div class="col-sm-6">
-        <input type="text" class="form-control" id="recipe_title" name="recipe_title" placeholder="{{ recipe.recipe_title }}">
+        <input type="text" class="form-control" id="recipe_title" name="recipe_title" value="{{ recipe.recipe_title }}">
         {{ render_errors(form.recipe_title) }}
       </div>
     </div>
@@ -22,8 +22,165 @@
     <div class="form-group row">
       <legend for="recipe_description" class="col-form-legend col-sm-2">Description</legend>
       <div class="col-sm-6">
-        <input type="text" class="form-control" id="recipe_description" name="recipe_description" placeholder="{{ recipe.recipe_description }}">
+        <input type="text" class="form-control" id="recipe_description" name="recipe_description" value="{{ recipe.recipe_description }}">
         {{ render_errors(form.recipe_description) }}
+      </div>
+    </div>
+
+    <fieldset class="form-group row">
+      <legend for="recipe_type" class="col-form-legend col-sm-2">Recipe Type</legend>
+      <div class="col-sm-6">
+          <div class="form-check">
+            <label class="form-check-label">
+              {% if recipe.recipe_type == "Breakfast" %}
+                <input type="radio" class="form-check-input" name="recipe_type" id="recipe_type-0" value="Breakfast" checked>
+              {% else %}
+                <input type="radio" class="form-check-input" name="recipe_type" id="recipe_type-0" value="Breakfast">
+              {% endif %}
+              Breakfast
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              {% if recipe.recipe_type == "Lunch" %}
+                <input type="radio" class="form-check-input" name="recipe_type" id="recipe_type-1" value="Lunch" checked>
+              {% else %}
+                <input type="radio" class="form-check-input" name="recipe_type" id="recipe_type-1" value="Lunch">
+              {% endif %}
+              Lunch
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              {% if recipe.recipe_type == "Dinner" %}
+                <input type="radio" class="form-check-input" name="recipe_type" id="recipe_type-2" value="Dinner" checked>
+              {% else %}
+                <input type="radio" class="form-check-input" name="recipe_type" id="recipe_type-2" value="Dinner">
+              {% endif %}
+              Dinner
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              {% if recipe.recipe_type == "Dessert" %}
+                <input type="radio" class="form-check-input" name="recipe_type" id="recipe_type-3" value="Dessert" checked>
+              {% else %}
+                <input type="radio" class="form-check-input" name="recipe_type" id="recipe_type-3" value="Dessert">
+              {% endif %}
+              Dessert
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              {% if recipe.recipe_type == "Side Dish" %}
+                <input type="radio" class="form-check-input" name="recipe_type" id="recipe_type-4" value="Side Dish" checked>
+              {% else %}
+                <input type="radio" class="form-check-input" name="recipe_type" id="recipe_type-4" value="Side Dish">
+              {% endif %}
+              Side Dish
+            </label>
+          </div>
+          {{ render_errors(form.recipe_type) }}
+      </div>
+    </fieldset>
+
+    <fieldset class="form-group row">
+      <legend for="recipe_rating" class="col-form-legend col-sm-2">Rating</legend>
+      <div class="col-sm-6">
+          <div class="form-check">
+            <label class="form-check-label">
+              {% if recipe.rating == 1 %}
+                <input type="radio" class="form-check-input" name="recipe_rating" id="recipe_rating-0" value="1" checked>
+              {% else %}
+                <input type="radio" class="form-check-input" name="recipe_rating" id="recipe_rating-0" value="1">
+              {% endif %}
+              1 (Worst)
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              {% if recipe.rating == 2 %}
+                <input type="radio" class="form-check-input" name="recipe_rating" id="recipe_rating-1" value="2" checked>
+              {% else %}
+                <input type="radio" class="form-check-input" name="recipe_rating" id="recipe_rating-1" value="2">
+              {% endif %}
+              2
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              {% if recipe.rating == 3 %}
+                <input type="radio" class="form-check-input" name="recipe_rating" id="recipe_rating-2" value="3" checked>
+              {% else %}
+                <input type="radio" class="form-check-input" name="recipe_rating" id="recipe_rating-2" value="3">
+              {% endif %}
+              3
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              {% if recipe.rating == 4 %}
+                <input type="radio" class="form-check-input" name="recipe_rating" id="recipe_rating-3" value="4" checked>
+              {% else %}
+                <input type="radio" class="form-check-input" name="recipe_rating" id="recipe_rating-3" value="4">
+              {% endif %}
+              4
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              {% if recipe.rating == 5 %}
+                <input type="radio" class="form-check-input" name="recipe_rating" id="recipe_rating-4" value="5" checked>
+              {% else %}
+                <input type="radio" class="form-check-input" name="recipe_rating" id="recipe_rating-4" value="5">
+              {% endif %}
+              5 (Best)
+            </label>
+          </div>
+          {{ render_errors(form.recipe_rating) }}
+      </div>
+    </fieldset>
+
+    <div class="form-group row">
+      <legend for="recipe_public" class="col-form-legend col-sm-2">Public Recipe?</legend>
+      <div class="col-sm-6">
+        <div class="form-check">
+          <label class="form-check-label">
+            {% if recipe.is_public == true %}
+              <input class="form-check-input" name="recipe_public" id="recipe_public" type="checkbox" checked>
+            {% else %}
+              <input class="form-check-input" name="recipe_public" id="recipe_public" type="checkbox">
+            {% endif %}
+            Yes
+          </label>
+          {{ render_errors(form.recipe_public) }}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <legend for="recipe_image" class="col-form-legend col-sm-2">Recipe Image</legend>
+      <div class="col-sm-6">
+        <label class="form-check-label">Current filename: {{ recipe.image_filename }}</label>
+        <input type="file" class="form-control-file" name="recipe_image" id="recipe_image" aria-describedby="fileHelp">
+        <small id="fileHelp" class="form-text text-muted">Select an image for this recipe.</small>
+        {{ render_errors(form.recipe_image) }}
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <legend for="recipe_ingredients" class="col-form-legend col-sm-2">Ingredients</legend>
+      <div class="col-sm-6">
+        <textarea class="form-control" name="recipe_ingredients" id="recipe_ingredients" rows="8">{{ recipe.ingredients }}</textarea>
+        {{ render_errors(form.recipe_ingredients) }}
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <legend for="recipe_steps" class="col-form-legend col-sm-2">Steps</legend>
+      <div class="col-sm-6">
+        <textarea class="form-control" name="recipe_steps" id="recipe_steps" rows="8">{{ recipe.recipe_steps }}</textarea>
+        {{ render_errors(form.recipe_steps) }}
       </div>
     </div>
 

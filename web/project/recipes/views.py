@@ -123,8 +123,8 @@ def delete_recipe(recipe_id):
 @recipes_blueprint.route('/edit/<recipe_id>', methods=['GET', 'POST'])
 @login_required
 def edit_recipe(recipe_id):
-    # Cannot pass in 'request.form' to EditRecipeForm constructor, as this will cause 'request.files' to not be
-    # sent to the form.  This will cause EditRecipeForm to not see the file data.
+    # Cannot pass in 'request.form' to AddRecipeForm constructor, as this will cause 'request.files' to not be
+    # sent to the form.  This will cause AddRecipeForm to not see the file data.
     # Flask-WTF handles passing form data to the form, so not parameters need to be included.
     form = EditRecipeForm()
     recipe = Recipe.query.filter_by(id=recipe_id).first()
@@ -133,13 +133,47 @@ def edit_recipe(recipe_id):
         if form.validate_on_submit():
             update_counter = 0
 
-            if form.recipe_title.data:
+            if form.recipe_title.data is not None and form.recipe_title.data != recipe.recipe_title:
+                flash('DEBUG: Updating recipe.recipe_title to {}.'.format(form.recipe_title.data), 'debug')
                 update_counter += 1
                 recipe.recipe_title = form.recipe_title.data
 
-            if form.recipe_description.data:
+            if form.recipe_description.data is not None and form.recipe_description.data != recipe.recipe_description:
+                flash('DEBUG: Updating recipe.recipe_description to {}.'.format(form.recipe_description.data), 'debug')
                 update_counter += 1
                 recipe.recipe_description = form.recipe_description.data
+
+            if form.recipe_public.data != recipe.is_public:
+                flash('DEBUG: Updating recipe.is_public to {}.'.format(form.recipe_public.data), 'debug')
+                update_counter += 1
+                recipe.is_public = form.recipe_public.data
+
+            if form.recipe_type.data != recipe.recipe_type:
+                flash('DEBUG: Updating recipe.recipe_type to {}.'.format(form.recipe_type.data), 'debug')
+                update_counter += 1
+                recipe.recipe_type = form.recipe_type.data
+
+            if form.recipe_rating.data != str(recipe.rating):
+                flash('DEBUG: Updating recipe.rating from {} to {}.'.format(str(recipe.rating), form.recipe_rating.data), 'debug')
+                update_counter += 1
+                recipe.rating = form.recipe_rating.data
+
+            if form.recipe_image.has_file():
+                flash('DEBUG: Updating recipe.image_filename to {}.'.format(form.recipe_image.data), 'debug')
+                update_counter += 1
+                filename = images.save(request.files['recipe_image'])
+                recipe.image_filename = filename
+                recipe.image_url = images.url(filename)
+
+            if form.recipe_ingredients.data != recipe.ingredients:
+                flash('DEBUG: Updating recipe.ingredients to {}.'.format(form.recipe_ingredients.data), 'debug')
+                update_counter += 1
+                recipe.ingredients = form.recipe_ingredients.data
+
+            if form.recipe_steps.data != recipe.recipe_steps:
+                flash('DEBUG: Updating recipe.recipe_steps to {}.'.format(form.recipe_steps.data), 'debug')
+                update_counter += 1
+                recipe.recipe_steps = form.recipe_steps.data
 
             if update_counter > 0:
                 db.session.add(recipe)

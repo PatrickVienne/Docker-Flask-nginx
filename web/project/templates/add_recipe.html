@@ -64,19 +64,42 @@
       </div>
     </fieldset>
 
-    <div class="form-group row">
-      <legend for="recipe_rating"class="col-form-legend col-sm-2">Rating</legend>
+    <fieldset class="form-group row">
+      <legend for="recipe_rating" class="col-form-legend col-sm-2">Rating</legend>
       <div class="col-sm-6">
-        <select class="form-control" name="recipe_rating" id="recipe_rating">
-          <option>1 - Worst</option>
-          <option>2</option>
-          <option>3</option>
-          <option>4</option>
-          <option>5 - Best</option>
-        </select>
-        {{ render_errors(form.recipe_rating) }}
+          <div class="form-check">
+            <label class="form-check-label">
+              <input type="radio" class="form-check-input" name="recipe_rating" id="recipe_rating-0" value="1">
+              1 (Worst)
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              <input type="radio" class="form-check-input" name="recipe_rating" id="recipe_rating-1" value="2">
+              2
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              <input type="radio" class="form-check-input" name="recipe_rating" id="recipe_rating-2" value="3" checked>
+              3
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              <input type="radio" class="form-check-input" name="recipe_rating" id="recipe_rating-3" value="4">
+              4
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label">
+              <input type="radio" class="form-check-input" name="recipe_rating" id="recipe_rating-4" value="5">
+              5 (Best)
+            </label>
+          </div>
+          {{ render_errors(form.recipe_rating) }}
       </div>
-    </div>
+    </fieldset>
 
     <div class="form-group row">
       <legend for="recipe_public" class="col-form-legend col-sm-2">Public Recipe?</legend>
