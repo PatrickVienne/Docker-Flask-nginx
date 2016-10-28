@@ -13,7 +13,6 @@ allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
 
 class Recipe(db.Model):
     """Recipe fields to add:
-        inspiration (website, book, etc.)
         date created
         date last modified
     """
@@ -31,6 +30,7 @@ class Recipe(db.Model):
     ingredients_html = db.Column(db.Text, default=None, nullable=True)
     recipe_steps = db.Column(db.Text, default=None, nullable=True)
     recipe_steps_html = db.Column(db.Text, default=None, nullable=True)
+    inspiration = db.Column(db.String, default=None, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     def __init__(self, title, description, user_id, is_public, image_filename=None, image_url=None, recipe_type=None,
