@@ -1,10 +1,32 @@
-Collecting freeze
-  Downloading freeze-1.0.10.tar.gz
-Requirement already satisfied (use --upgrade to upgrade): six in /Users/patrickkennedy/.virtualenvs/ffr_env/lib/python3.4/site-packages (from freeze)
-Building wheels for collected packages: freeze
-  Running setup.py bdist_wheel for freeze: started
-  Running setup.py bdist_wheel for freeze: finished with status 'done'
-  Stored in directory: /Users/patrickkennedy/Library/Caches/pip/wheels/dd/f2/47/087b0fa08df94a9e9ded33273bd30e6d03a7b5ff0d0d452edc
-Successfully built freeze
-Installing collected packages: freeze
-Successfully installed freeze-1.0.10
+alembic==0.8.8
+bcrypt==3.1.0
+bleach==1.4.3
+blinker==1.4
+cffi==1.7.0
+click==6.6
+Flask==0.11.1
+Flask-Bcrypt==0.7.1
+Flask-Login==0.3.2
+Flask-Mail==0.9.1
+Flask-Migrate==2.0.0
+Flask-PageDown==0.2.1
+Flask-Script==2.0.5
+Flask-SQLAlchemy==2.1
+Flask-Uploads==0.2.1
+Flask-WTF==0.12
+freeze==1.0.10
+gunicorn==19.6.0
+html5lib==0.9999999
+itsdangerous==0.24
+Jinja2==2.8
+Mako==1.0.4
+Markdown==2.6.7
+MarkupSafe==0.23
+nose2==0.6.4
+psycopg2==2.6.1
+pycparser==2.14
+python-editor==1.0.1
+six==1.10.0
+SQLAlchemy==1.0.13
+Werkzeug==0.11.10
+WTForms==2.1
