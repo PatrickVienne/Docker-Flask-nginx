@@ -47,11 +47,19 @@ def public_recipes():
     return render_template('public_recipes.html', public_recipes=all_public_recipes)
 
 
-@recipes_blueprint.route('/recipes')
+@recipes_blueprint.route('/recipes/<recipe_type>')
 @login_required
-def user_recipes():
-    all_user_recipes = Recipe.query.filter_by(user_id=current_user.id)
-    return render_template('user_recipes.html', user_recipes=all_user_recipes)
+def user_recipes(recipe_type='All'):
+    if recipe_type in ['Breakfast', 'Lunch', 'Dinner', 'Dessert', 'Side_Dish']:
+        my_recipes = Recipe.query.filter_by(user_id=current_user.id, recipe_type=recipe_type)
+        return render_template('user_recipes.html', user_recipes=my_recipes, recipe_type=recipe_type)
+    elif recipe_type == 'All':
+        my_recipes = Recipe.query.filter_by(user_id=current_user.id)
+        return render_template('user_recipes.html', user_recipes=my_recipes, recipe_type=recipe_type)
+    else:
+        flash('ERROR! Invalid recipe type selected.', 'error')
+
+    return redirect(url_for('recipes.public_recipes'))
 
 
 @recipes_blueprint.route('/add', methods=['GET', 'POST'])
