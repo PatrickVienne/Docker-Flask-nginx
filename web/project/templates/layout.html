@@ -35,6 +35,7 @@
             {% if current_user.is_authenticated %}
               <li><a href="{{ url_for('recipes.user_recipes') }}">My Recipes</a></li>
               <li><a href="{{ url_for('recipes.add_recipe') }}">Add Recipe</a></li>
+              <li><a href="{{ url_for('recipes.whats_for_dinner') }}">What's for Dinner?</a></li>
               <li><a href="{{ url_for('users.logout') }}">Log Out</a></li>
               {% if current_user.role == "admin" %}
               <li><a href="{{ url_for('users.admin_view_users') }}">View Users (Admin)</a></li>
