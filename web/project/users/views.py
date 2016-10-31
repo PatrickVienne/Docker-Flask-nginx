@@ -97,7 +97,7 @@ def register():
                 login_user(new_user)
                 send_confirmation_email(new_user.email)
                 flash('Thanks for registering!  Please check your email to confirm your email address.', 'success')
-                return redirect(url_for('recipes.user_recipes'))
+                return redirect(url_for('recipes.user_recipes', recipe_type='All'))
             except IntegrityError:
                 db.session.rollback()
                 flash('ERROR! Email ({}) already exists.'.format(form.email.data), 'error')
@@ -118,7 +118,7 @@ def login():
                 db.session.commit()
                 login_user(user)
                 flash('Thanks for logging in, {}'.format(current_user.email))
-                return redirect(url_for('recipes.user_recipes'))
+                return redirect(url_for('recipes.user_recipes', recipe_type='All'))
             else:
                 flash('ERROR! Incorrect login credentials.', 'error')
     return render_template('login.html', form=form)

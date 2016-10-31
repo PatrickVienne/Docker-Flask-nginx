@@ -82,11 +82,12 @@ def add_recipe():
                                 form.recipe_type.data,
                                 form.recipe_rating.data,#  or None,
                                 form.recipe_ingredients.data,
-                                form.recipe_steps.data)
+                                form.recipe_steps.data,
+                                form.recipe_inspiration.data)
             db.session.add(new_recipe)
             db.session.commit()
             flash('New recipe, {}, added!'.format(new_recipe.recipe_title), 'success')
-            return redirect(url_for('recipes.user_recipes'))
+            return redirect(url_for('recipes.user_recipes', recipe_type='All'))
         else:
             flash_errors(form)
             flash('ERROR! Recipe was not added.', 'error')
@@ -119,7 +120,7 @@ def delete_recipe(recipe_id):
             db.session.delete(recipe)
             db.session.commit()
             flash('{} was deleted.'.format(recipe.recipe_title), 'success')
-            return redirect(url_for('recipes.user_recipes'))
+            return redirect(url_for('recipes.user_recipes', recipe_type='All'))
         else:
             flash('Error! Incorrect permissions to delete this recipe.', 'error')
     else:
@@ -181,6 +182,11 @@ def edit_recipe(recipe_id):
                 flash('DEBUG: Updating recipe.recipe_steps to {}.'.format(form.recipe_steps.data), 'debug')
                 update_counter += 1
                 recipe.recipe_steps = form.recipe_steps.data
+
+            if form.recipe_inspiration.data is not None and form.recipe_inspiration.data != recipe.inspiration:
+                flash('DEBUG: Updating recipe.inspiration to {}.'.format(form.recipe_inspiration.data), 'debug')
+                update_counter += 1
+                recipe.inspiration = form.recipe_inspiration.data
 
             if update_counter > 0:
                 db.session.add(recipe)

@@ -30,6 +30,7 @@ class AddRecipeForm(Form):
     recipe_image = FileField('Recipe Image', validators=[FileRequired(), FileAllowed(images, 'Images only!')])
     recipe_ingredients = PageDownField('Recipe Ingredients', validators=[DataRequired()], render_kw={"rows": 12, "cols": 100})
     recipe_steps = PageDownField('Recipe Steps', validators=[DataRequired()], render_kw={"rows": 12, "cols": 100})
+    recipe_inspiration = StringField('Recipe Inspiration', validators=[DataRequired()])
 
 
 class EditRecipeForm(Form):
@@ -53,3 +54,4 @@ class EditRecipeForm(Form):
     recipe_image = FileField('Recipe Image', validators=[FileAllowed(images, 'Images only!')])
     recipe_ingredients = PageDownField('Recipe Ingredients', validators=[], render_kw={"rows": 12, "cols": 100})
     recipe_steps = PageDownField('Recipe Steps', validators=[], render_kw={"rows": 12, "cols": 100})
+    recipe_inspiration = StringField('Recipe Inspiration', validators=[DataRequired()])

@@ -34,7 +34,7 @@ class Recipe(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     def __init__(self, title, description, user_id, is_public, image_filename=None, image_url=None, recipe_type=None,
-                 rating=None, ingredients=None, recipe_steps=None):
+                 rating=None, ingredients=None, recipe_steps=None, inspiration=None):
         self.recipe_title = title
         self.recipe_description = description
         self.is_public = is_public
@@ -44,6 +44,7 @@ class Recipe(db.Model):
         self.rating = rating
         self.ingredients = ingredients
         self.recipe_steps = recipe_steps
+        self.inspiration = inspiration
         self.user_id = user_id
 
     def __repr__(self):

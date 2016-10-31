@@ -140,6 +140,14 @@
     </div>
 
     <div class="form-group row">
+      <legend for="recipe_inspiration" class="col-form-legend col-sm-2">Inspiration</legend>
+      <div class="col-sm-6">
+        <input type="text" class="form-control" id="recipe_inspiration" name="recipe_inspiration" placeholder="Enter recipe inspiration...">
+        {{ render_errors(form.recipe_inspiration) }}
+      </div>
+    </div>
+
+    <div class="form-group row">
       <div class="offset-sm-2 col-sm-10">
         <button type="submit" class="btn btn-success">Add Recipe</button>
       </div>
