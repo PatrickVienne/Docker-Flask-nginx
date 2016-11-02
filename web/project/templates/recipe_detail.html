@@ -11,41 +11,26 @@
     </h5>
   </div>
 
+
   <div class="row">
     <div class="col-xs-6 col-md-4">
       <div class="panel panel-primary">
-        <div class="panel-heading">Description</div>
-        <div class="panel-body">{{ recipe.Recipe.recipe_description }}</div>
-      </div>
-
-      <div class="panel panel-primary">
-        <div class="panel-heading">Public or Private</div>
+        <div class="panel-heading">Recipe Details</div>
+        <div class="panel-body"><b>Description:</b> {{ recipe.Recipe.recipe_description }}</div>
         {% if recipe.Recipe.is_public %}
-          <div class="panel-body">Public</div>
+          <div class="panel-body"><b>Public or Private:</b> Public</div>
         {% else %}
-          <div class="panel-body">Private</div>
+          <div class="panel-body"><b>Public or Private:</b> Private</div>
         {% endif %}
-      </div>
-
-      <div class="panel panel-primary">
-        <div class="panel-heading">Recipe Type</div>
-        <div class="panel-body">{{ recipe.Recipe.recipe_type }}</div>
-      </div>
-
-      <div class="panel panel-primary">
-        <div class="panel-heading">Rating (1-worst to 5-best)</div>
-        <div class="panel-body">{{ recipe.Recipe.rating }}</div>
-      </div>
-
-      <div class="panel panel-primary">
-        <div class="panel-heading">Inspiration</div>
-        <div class="panel-body">{{ recipe.Recipe.inspiration }}</div>
+        <div class="panel-body"><b>Recipe Type:</b> {{ recipe.Recipe.recipe_type }}</div>
+        <div class="panel-body"><b>Rating (1-worst to 5-best):</b> {{ recipe.Recipe.rating }}</div>
+        <div class="panel-body"><b>Inspiration:</b> {{ recipe.Recipe.inspiration }}</div>
       </div>
    </div>
 
     <div class=".col-xs-6 .col-md-8">
       {% if recipe.Recipe.image_url %}
-        <img src="{{ recipe.Recipe.image_url }}" alt="{{ recipe.Recipe.image_filename }}" style="width:600px;height:450px;">
+        <img class="center-block img-responsive" src="{{ recipe.Recipe.image_url }}" alt="{{ recipe.Recipe.image_filename }}" style="width:600px;height:450px;">
       {% endif %}
     </div>
   </div>

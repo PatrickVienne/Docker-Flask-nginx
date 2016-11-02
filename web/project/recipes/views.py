@@ -210,7 +210,6 @@ def whats_for_dinner():
     dinner_takeout_recommendation = False
     dinner_recipe = None
     dinner_recipes = Recipe.query.filter_by(recipe_type='Dinner').all()
-    results_length = len(dinner_recipes)
 
     if len(dinner_recipes) > 0:
         proposed_index = int((random() * 1000) % len(dinner_recipes))

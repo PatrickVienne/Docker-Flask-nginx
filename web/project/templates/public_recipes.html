@@ -14,7 +14,7 @@
         {% for recipe in public_recipes %}
         <div class="col-xs-6 col-md-3">
           <tr>
-            <td><a href="{{ url_for('recipes.recipe_details', recipe_id=recipe.id) }}">{{ recipe.recipe_title }}</a></td>
+            <td>{{ recipe.recipe_title }}</td>
             <a href="{{ url_for('recipes.recipe_details', recipe_id=recipe.id) }}" class="thumbnail">
               <img src="{{ recipe.image_url }}" alt="{{ recipe.image_filename }}">
             </a>
