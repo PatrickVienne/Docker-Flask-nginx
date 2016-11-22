@@ -4,6 +4,7 @@ bleach==1.4.3
 blinker==1.4
 cffi==1.7.0
 click==6.6
+coverage==4.2
 Flask==0.11.1
 Flask-Bcrypt==0.7.1
 Flask-Login==0.3.2
@@ -26,6 +27,8 @@ nose2==0.6.4
 psycopg2==2.6.1
 pycparser==2.14
 python-editor==1.0.1
+requests==2.11.1
+requests-toolbelt==0.7.0
 six==1.10.0
 SQLAlchemy==1.0.13
 Werkzeug==0.11.10

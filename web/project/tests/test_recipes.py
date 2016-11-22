@@ -3,6 +3,7 @@
 
 import os
 import unittest
+from io import BytesIO
 
 from project import app, db, mail
 from project.models import Recipe, User
@@ -91,27 +92,11 @@ class RecipesTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Kennedy Family Recipes', response.data)
         self.assertIn(b'Register', response.data)
-        self.assertIn(b'Hamburgers', response.data)
-        self.assertIn(b'Mediterranean Chicken', response.data)
+        self.assertIn(b'Our Favorite Dairy-free and Soy-free Recipes!', response.data)
+        self.assertNotIn(b'Hamburgers', response.data)
+        self.assertNotIn(b'Mediterranean Chicken', response.data)
         self.assertNotIn(b'Tacos', response.data)
         self.assertNotIn(b'Homemade Pizza', response.data)
-
-    def test_user_recipes_page(self):
-        self.register_user()
-        self.add_recipes()
-        response = self.app.get('/recipes', follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Kennedy Family Recipes', response.data)
-        self.assertIn(b'Hamburgers', response.data)
-        self.assertIn(b'Mediterranean Chicken', response.data)
-        self.assertIn(b'Tacos', response.data)
-        self.assertIn(b'Homemade Pizza', response.data)
-
-    def test_user_recipes_page_without_login(self):
-        response = self.app.get('/recipes', follow_redirects=False)
-        self.assertEqual(response.status_code, 302)
-        self.assertIn(b'You should be redirected automatically to target URL:', response.data)
-        self.assertIn(b'/login?next=%2Frecipes', response.data)
 
     def test_add_recipe_page(self):
         self.register_user()
@@ -121,11 +106,24 @@ class RecipesTests(unittest.TestCase):
 
     def test_add_recipe(self):
         self.register_user()
-        response = self.app.post(
-            '/add',
-            data=dict(recipe_title='Hamburgers2',
-                      recipe_description='Delicious hamburger with pretzel rolls'),
-            follow_redirects=True)
+        app_client = app.test_client()
+        app_client.post('/register',
+                        data=dict(email='patkennedy79@gmail.com', password='FlaskIsAwesome', confirm='FlaskIsAwesome'),
+                        follow_redirects=True)
+        app_client.post('/login',
+                        data=dict(email='patkennedy79@gmail.com', password='FlaskIsAwesome'),
+                        follow_redirects=True)
+        response = app_client.post('/add',
+                                   buffered=True,
+                                   content_type='multipart/form-data',
+                                   data={'recipe_title': 'Hamburgers2',
+                                         'recipe_description': 'Delicious hamburger with pretzel rolls',
+                                         'recipe_type': 'Dinner',
+                                         'recipe_steps': 'Step 1 Step 2 Step 3',
+                                         'recipe_ingredients': 'Ingredient #1 Ingredient #2',
+                                         'recipe_inspiration': 'http://www.foodnetwork.com/blaa',
+                                         'recipe_image': (BytesIO(b'my file contents'), 'image001.jpg')},
+                                   follow_redirects=True)
         self.assertIn(b'New recipe, Hamburgers2, added!', response.data)
 
     def test_add_invalid_recipe(self):
@@ -146,7 +144,7 @@ class RecipesTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Hamburgers', response.data)
         self.assertIn(b'Public', response.data)
-        self.assertIn(b'patkennedy79@gmail.com', response.data)
+        self.assertNotIn(b'patkennedy79@gmail.com', response.data)
 
     def test_recipe_detail_private_recipe(self):
         self.register_user()
