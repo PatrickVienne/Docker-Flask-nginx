@@ -2,7 +2,7 @@
 #### imports ####
 #################
 
-from flask import Flask, render_template
+from flask import Flask, render_template, make_response, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
@@ -57,9 +57,19 @@ app.register_blueprint(recipes_blueprint)
 #### custom error pages ####
 ############################
 
+@app.errorhandler(400)
+def page_not_found(e):
+    return make_response(jsonify({'error': 'Not found'}), 400)
+
+
+# @app.errorhandler(404)
+# def page_not_found(e):
+#     return render_template('404.html'), 404
+
+
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template('404.html'), 404
+    return make_response(jsonify({'error': 'Not found'}), 404)
 
 
 @app.errorhandler(403)

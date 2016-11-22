@@ -4,7 +4,7 @@
 #### imports ####
 #################
 
-from flask import render_template, Blueprint, request, redirect, url_for, flash
+from flask import render_template, Blueprint, request, redirect, url_for, flash, abort, jsonify
 from flask_login import current_user, login_required
 from project import db, images
 from project.models import Recipe, User
@@ -35,6 +35,12 @@ def flash_errors(form):
 def get_all_recipes_with_users():
     # SQL: SELECT * FROM recipes JOIN users ON recipes.user_id = users.id;
     return db.session.query(Recipe, User).join(User).all()
+
+
+def add_uri_to_recipe(recipe):
+    new_recipe = recipe
+    new_recipe.id = url_for('recipes.api_get_recipe', recipe_id=recipe.id, _external=True)
+    return new_recipe
 
 
 ################
@@ -228,3 +234,119 @@ def whats_for_dinner():
                            recipe_found=dinner_recipe_found,
                            takeout_recommendation=dinner_takeout_recommendation,
                            recipe=dinner_recipe)
+
+
+###############
+####  API  ####
+###############
+
+# @recipes_blueprint.route('/api/v1_1/add_recipe', methods=['POST'])
+# def api_create_new_recipe2():
+#     if not request.json or 'title' not in request.json:
+#         print(request.json)
+#         abort(400)
+#
+#     filename = images.save(request.files['recipe_image'])
+#     url = images.url(filename)
+#     new_recipe = Recipe(request.json['title'],
+#                         request.json['description'],
+#                         4,
+#                         True,
+#                         image_filename=filename,
+#                         image_url=url,
+#                         recipe_type=request.json['recipe_type'])
+#     db.session.add(new_recipe)
+#     db.session.commit()
+#
+#     return jsonify({'recipe': new_recipe.recipe_title,
+#                     'description': new_recipe.recipe_description,
+#                     'public': new_recipe.is_public,
+#                     'filename': new_recipe.image_filename}), 201
+
+
+@recipes_blueprint.route('/api/v1_1/recipes', methods=['GET'])
+def api_get_all_recipes():
+    recipes = Recipe.query.all()
+    # recipes = Recipe.query.filter_by(user_id=1).all()
+    # recipes = Recipe.query.filter_by(user_id=4).all()
+
+    json_output = []
+    for recipe in recipes:
+        recipe_json = {'id': url_for('recipes.api_get_recipe', recipe_id=recipe.id, _external=True),
+                       'recipe': recipe.recipe_title,
+                       'description': recipe.recipe_description,
+                       'public': recipe.is_public,
+                       'filename': recipe.image_filename}
+        json_output.append(recipe_json)
+
+    return jsonify(json_output)
+
+
+@recipes_blueprint.route('/api/v1_1/recipes/<int:recipe_id>', methods=['GET'])
+def api_get_recipe(recipe_id):
+    recipe = Recipe.query.filter_by(id=recipe_id).first()
+    if recipe is not None:
+        return jsonify({'recipe': recipe.recipe_title,
+                        'description': recipe.recipe_description,
+                        'public': recipe.is_public,
+                        'filename': recipe.image_filename})
+    else:
+        abort(404)
+
+
+@recipes_blueprint.route('/api/v1_0/recipes', methods=['POST'])
+def api_create_recipe():
+    if not request.json or 'title' not in request.json:
+        abort(404)
+
+    user = User.query.filter_by(email='patkennedy79@gmail.com').first()
+    new_recipe = Recipe(request.json['title'],
+                        request.json['description'],
+                        user.id,
+                        True,
+                        recipe_type=request.json['recipe_type'])
+    db.session.add(new_recipe)
+    db.session.commit()
+
+    return jsonify({'recipe': new_recipe.recipe_title,
+                    'description': new_recipe.recipe_description,
+                    'public': new_recipe.is_public,
+                    'filename': new_recipe.image_filename}), 201
+
+
+@recipes_blueprint.route('/api/v1_1/recipes/<int:recipe_id>', methods=['DELETE'])
+def api_delete_recipe(recipe_id):
+    recipe = Recipe.query.filter_by(id=recipe_id).first()
+    if recipe is not None:
+        db.session.delete(recipe)
+        db.session.commit()
+        return jsonify({'result': True})
+    else:
+        abort(404)
+
+
+@recipes_blueprint.route('/api/v1_1/recipes/<int:recipe_id>', methods=['PUT'])
+def api_update_recipe(recipe_id):
+    recipe = Recipe.query.filter_by(id=recipe_id).first()
+    if not request.json:
+        abort(404)
+    elif recipe is not None:
+        update_counter = 0
+        if 'title' in request.json:
+            update_counter += 1
+            recipe.recipe_title = request.json.get('title')
+        if 'description' in request.json:
+            update_counter += 1
+            recipe.recipe_description = request.json.get('description')
+        if 'recipe_type' in request.json:
+            update_counter += 1
+            recipe.recipe_type = request.json.get('recipe_type')
+
+        if update_counter > 0:
+            db.session.add(recipe)
+            db.session.commit()
+            return jsonify({'result': True})
+        else:
+            return jsonify({'result': False})
+    else:
+        abort(404)
