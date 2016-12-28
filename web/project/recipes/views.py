@@ -10,6 +10,7 @@ from project import db, images
 from project.models import Recipe, User
 from .forms import AddRecipeForm, EditRecipeForm
 from random import random
+import json
 
 
 ################
@@ -240,30 +241,6 @@ def whats_for_dinner():
 ####  API  ####
 ###############
 
-# @recipes_blueprint.route('/api/v1_1/add_recipe', methods=['POST'])
-# def api_create_new_recipe2():
-#     if not request.json or 'title' not in request.json:
-#         print(request.json)
-#         abort(400)
-#
-#     filename = images.save(request.files['recipe_image'])
-#     url = images.url(filename)
-#     new_recipe = Recipe(request.json['title'],
-#                         request.json['description'],
-#                         4,
-#                         True,
-#                         image_filename=filename,
-#                         image_url=url,
-#                         recipe_type=request.json['recipe_type'])
-#     db.session.add(new_recipe)
-#     db.session.commit()
-#
-#     return jsonify({'recipe': new_recipe.recipe_title,
-#                     'description': new_recipe.recipe_description,
-#                     'public': new_recipe.is_public,
-#                     'filename': new_recipe.image_filename}), 201
-
-
 @recipes_blueprint.route('/api/v1_1/recipes', methods=['GET'])
 def api_get_all_recipes():
     recipes = Recipe.query.all()
@@ -276,7 +253,8 @@ def api_get_all_recipes():
                        'recipe': recipe.recipe_title,
                        'description': recipe.recipe_description,
                        'public': recipe.is_public,
-                       'filename': recipe.image_filename}
+                       'image_filename': recipe.image_filename,
+                       'image_url': recipe.image_url}
         json_output.append(recipe_json)
 
     return jsonify(json_output)
@@ -294,7 +272,7 @@ def api_get_recipe(recipe_id):
         abort(404)
 
 
-@recipes_blueprint.route('/api/v1_0/recipes', methods=['POST'])
+@recipes_blueprint.route('/api/v1_1/recipes', methods=['POST'])
 def api_create_recipe():
     if not request.json or 'title' not in request.json:
         abort(404)
@@ -328,25 +306,67 @@ def api_delete_recipe(recipe_id):
 @recipes_blueprint.route('/api/v1_1/recipes/<int:recipe_id>', methods=['PUT'])
 def api_update_recipe(recipe_id):
     recipe = Recipe.query.filter_by(id=recipe_id).first()
-    if not request.json:
-        abort(404)
-    elif recipe is not None:
-        update_counter = 0
-        if 'title' in request.json:
-            update_counter += 1
-            recipe.recipe_title = request.json.get('title')
-        if 'description' in request.json:
-            update_counter += 1
-            recipe.recipe_description = request.json.get('description')
-        if 'recipe_type' in request.json:
-            update_counter += 1
-            recipe.recipe_type = request.json.get('recipe_type')
+    if recipe is not None:
+        if request.files is not None:
+            if 'recipe_image' in request.files:
+                print('request.files: {}'.format(str(request.files)))
+                print('request.files[recipe_image]: {}'.format(str(request.files['recipe_image'])))
+                print('request.files[recipe_image].filename: {}'.format(str(request.files['recipe_image'].filename)))
+                filename = images.save(request.files['recipe_image'])
+                url = images.url(filename)
 
-        if update_counter > 0:
-            db.session.add(recipe)
-            db.session.commit()
-            return jsonify({'result': True})
+                recipe.image_filename = filename
+                recipe.image_url = images.url(filename)
+                print('filename: {}'.format(filename))
+                print('url: {}'.format(url))
+                db.session.add(recipe)
+                db.session.commit()
+
+                return jsonify({'filename': filename,
+                                'url': url})
+            return jsonify({'Error': 'recipe_image not found.'})
+        elif request.json is not None:
+            update_counter = 0
+            if 'title' in request.json:
+                update_counter += 1
+                recipe.recipe_title = request.json.get('title')
+            if 'description' in request.json:
+                update_counter += 1
+                recipe.recipe_description = request.json.get('description')
+            if 'recipe_type' in request.json:
+                update_counter += 1
+                recipe.recipe_type = request.json.get('recipe_type')
+
+            if update_counter > 0:
+                db.session.add(recipe)
+                db.session.commit()
+                return jsonify({'result': True})
+            else:
+                return jsonify({'result': False})
         else:
-            return jsonify({'result': False})
+            return jsonify({'Error': 'neither files nor json data found.'})
     else:
-        abort(404)
+        return jsonify({'Error': 'recipe not found in database.'})
+
+
+# @recipes_blueprint.route('/api/v1_1/recipes/<int:recipe_id>/image', methods=['PUT'])
+# def api_update_recipe_with_image(recipe_id):
+#     recipe = Recipe.query.filter_by(id=recipe_id).first()
+#     if 'recipe_image' in request.files:
+#         print('request.files: {}'.format(str(request.files)))
+#         print('request.files[recipe_image]: {}'.format(str(request.files['recipe_image'])))
+#         print('request.files[recipe_image].filename: {}'.format(str(request.files['recipe_image'].filename)))
+#         filename = images.save(request.files['recipe_image'])
+#         url = images.url(filename)
+#
+#         recipe.image_filename = filename
+#         recipe.image_url = images.url(filename)
+#         print('filename: {}'.format(filename))
+#         print('url: {}'.format(url))
+#         db.session.add(recipe)
+#         db.session.commit()
+#
+#         return jsonify({'filename': filename,
+#                         'url': url}), 201
+#     else:
+#         abort(404)

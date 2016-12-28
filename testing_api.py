@@ -29,9 +29,9 @@ url = URL_BASE + 'api/v1_1/recipes'
 r = requests.get(url)
 print(r.text)
 
-# API v1.0 - POST
+# API v1.1 - POST
 print('Add a new recipe...')
-url = URL_BASE + 'api/v1_0/recipes'
+url = URL_BASE + 'api/v1_1/recipes'
 json_data = {'title': 'Tacos2', 'description': 'My favorite tacos!', 'recipe_type': 'Dinner'}
 r = requests.post(url, json=json_data)
 print(r.status_code)
@@ -50,4 +50,18 @@ url = URL_BASE + 'api/v1_1/recipes'
 r = requests.get(url)
 print(r.status_code)
 print(r.headers)
+print(r.text)
+
+# API v1.1 - PUT (Add image)
+print('Updating recipe #2 with recipe image...')
+url = URL_BASE + 'api/v1_1/recipes/2'
+r = requests.put(url, files={'recipe_image': open('IMG_6127.JPG', 'rb')})
+print(r.status_code)
+print(r.headers)
+print(r.text)
+
+# API v1.1 - GET (All)
+print('Retrieving all recipes...')
+url = URL_BASE + 'api/v1_1/recipes'
+r = requests.get(url)
 print(r.text)
