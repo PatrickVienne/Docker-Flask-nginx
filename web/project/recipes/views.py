@@ -237,15 +237,18 @@ def whats_for_dinner():
                            recipe=dinner_recipe)
 
 
-###############
-####  API  ####
-###############
+###################
+####  API v1.1 ####
+###################
 
 @recipes_blueprint.route('/api/v1_1/recipes', methods=['GET'])
 def api_get_all_recipes():
     recipes = Recipe.query.all()
     # recipes = Recipe.query.filter_by(user_id=1).all()
     # recipes = Recipe.query.filter_by(user_id=4).all()
+
+    if len(recipes) == 0:
+        return jsonify({'Error': 'No recipes were found.'})
 
     json_output = []
     for recipe in recipes:
@@ -267,7 +270,8 @@ def api_get_recipe(recipe_id):
         return jsonify({'recipe': recipe.recipe_title,
                         'description': recipe.recipe_description,
                         'public': recipe.is_public,
-                        'filename': recipe.image_filename})
+                        'image_filename': recipe.image_filename,
+                        'image_url': recipe.image_url})
     else:
         abort(404)
 
@@ -307,33 +311,34 @@ def api_delete_recipe(recipe_id):
 def api_update_recipe(recipe_id):
     recipe = Recipe.query.filter_by(id=recipe_id).first()
     if recipe is not None:
-        if request.files is not None:
-            if 'recipe_image' in request.files:
-                print('request.files: {}'.format(str(request.files)))
-                print('request.files[recipe_image]: {}'.format(str(request.files['recipe_image'])))
-                print('request.files[recipe_image].filename: {}'.format(str(request.files['recipe_image'].filename)))
-                filename = images.save(request.files['recipe_image'])
-                url = images.url(filename)
+        if 'recipe_image' in request.files:
+            print('request.files: {}'.format(str(request.files)))
+            print('request.files[recipe_image]: {}'.format(str(request.files['recipe_image'])))
+            print('request.files[recipe_image].filename: {}'.format(str(request.files['recipe_image'].filename)))
+            filename = images.save(request.files['recipe_image'])
+            url = images.url(filename)
 
-                recipe.image_filename = filename
-                recipe.image_url = images.url(filename)
-                print('filename: {}'.format(filename))
-                print('url: {}'.format(url))
-                db.session.add(recipe)
-                db.session.commit()
+            recipe.image_filename = filename
+            recipe.image_url = images.url(filename)
+            print('filename: {}'.format(filename))
+            print('url: {}'.format(url))
+            db.session.add(recipe)
+            db.session.commit()
 
-                return jsonify({'filename': filename,
-                                'url': url})
-            return jsonify({'Error': 'recipe_image not found.'})
-        elif request.json is not None:
+            return jsonify({'filename': filename,
+                            'url': url})
+        else:
             update_counter = 0
             if 'title' in request.json:
+                print('Updating title...')
                 update_counter += 1
                 recipe.recipe_title = request.json.get('title')
             if 'description' in request.json:
+                print('Updating description...')
                 update_counter += 1
                 recipe.recipe_description = request.json.get('description')
             if 'recipe_type' in request.json:
+                print('Updating recipe_type...')
                 update_counter += 1
                 recipe.recipe_type = request.json.get('recipe_type')
 
@@ -343,30 +348,37 @@ def api_update_recipe(recipe_id):
                 return jsonify({'result': True})
             else:
                 return jsonify({'result': False})
-        else:
-            return jsonify({'Error': 'neither files nor json data found.'})
     else:
         return jsonify({'Error': 'recipe not found in database.'})
 
 
-# @recipes_blueprint.route('/api/v1_1/recipes/<int:recipe_id>/image', methods=['PUT'])
-# def api_update_recipe_with_image(recipe_id):
-#     recipe = Recipe.query.filter_by(id=recipe_id).first()
-#     if 'recipe_image' in request.files:
-#         print('request.files: {}'.format(str(request.files)))
-#         print('request.files[recipe_image]: {}'.format(str(request.files['recipe_image'])))
-#         print('request.files[recipe_image].filename: {}'.format(str(request.files['recipe_image'].filename)))
-#         filename = images.save(request.files['recipe_image'])
-#         url = images.url(filename)
-#
-#         recipe.image_filename = filename
-#         recipe.image_url = images.url(filename)
-#         print('filename: {}'.format(filename))
-#         print('url: {}'.format(url))
-#         db.session.add(recipe)
-#         db.session.commit()
-#
-#         return jsonify({'filename': filename,
-#                         'url': url}), 201
-#     else:
-#         abort(404)
+###################
+####  API v1.2 ####
+###################
+
+@recipes_blueprint.route('/api/v1_2/recipes', methods=['GET'])
+def api1_2_get_all_recipes():
+    return jsonify({'recipes': [recipe.get_url() for recipe in Recipe.query.all()]})
+
+
+@recipes_blueprint.route('/api/v1_2/recipes/<int:recipe_id>', methods=['GET'])
+def api1_2_get_recipe(recipe_id):
+    return jsonify(Recipe.query.get_or_404(recipe_id).export_data())
+
+
+@recipes_blueprint.route('/api/v1_2/recipes', methods=['POST'])
+def api1_2_create_recipe():
+    new_recipe = Recipe()
+    new_recipe.import_data(request.json)
+    db.session.add(new_recipe)
+    db.session.commit()
+    return jsonify({}), 201, {'Location': new_recipe.get_url()}
+
+
+@recipes_blueprint.route('/api/v1_2/recipes/<int:recipe_id>', methods=['PUT'])
+def api1_2_update_recipe(recipe_id):
+    recipe = Recipe.query.get_or_404(recipe_id)
+    recipe.import_data(request.json)
+    db.session.add(recipe)
+    db.session.commit()
+    return jsonify({})
