@@ -8,12 +8,14 @@ URL_BASE = 'http://localhost:5000/'
 print('Retrieving all recipes...')
 url = URL_BASE + 'api/v1_2/recipes'
 r = requests.get(url)
+print(r.status_code)
 print(r.text)
 
 # API v1.2 - GET (Individual Recipe)
 print('Retrieving recipe #2...')
 url = URL_BASE + 'api/v1_2/recipes/2'
 r = requests.get(url)
+print(r.status_code)
 print(r.text)
 
 # API v1.2 - POST
@@ -29,15 +31,30 @@ print(r.text)
 print('Retrieving all recipes...')
 url = URL_BASE + 'api/v1_2/recipes'
 r = requests.get(url)
+print(r.status_code)
 print(r.text)
 
-# API v1.1 - PUT
+# API v1.2 - PUT
 print('Updating recipe #2...')
 url = URL_BASE + 'api/v1_2/recipes/2'
 json_data = {'title': 'Updated recipe', 'description': 'My favorite recipe'}
 r = requests.put(url, json=json_data)
 print(r.status_code)
 print(r.headers)
+print(r.text)
+
+# API v1.2 - DELETE
+print('Deleting recipe #1...')
+url = URL_BASE + 'api/v1_2/recipes/1'
+r = requests.delete(url)
+print(r.status_code)
+print(r.text)
+
+# API v1.2 - GET (All)
+print('Retrieving all recipes...')
+url = URL_BASE + 'api/v1_2/recipes'
+r = requests.get(url)
+print(r.status_code)
 print(r.text)
 
 

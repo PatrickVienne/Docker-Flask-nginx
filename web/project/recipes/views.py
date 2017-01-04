@@ -381,4 +381,12 @@ def api1_2_update_recipe(recipe_id):
     recipe.import_data(request.json)
     db.session.add(recipe)
     db.session.commit()
-    return jsonify({})
+    return jsonify({'result': True})
+
+
+@recipes_blueprint.route('/api/v1_2/recipes/<int:recipe_id>', methods=['DELETE'])
+def api1_2_delete_recipe(recipe_id):
+    recipe = Recipe.query.get_or_404(recipe_id)
+    db.session.delete(recipe)
+    db.session.commit()
+    return jsonify({'result': True})
