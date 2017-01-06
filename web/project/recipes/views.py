@@ -6,7 +6,7 @@
 
 from flask import render_template, Blueprint, request, redirect, url_for, flash, abort, jsonify
 from flask_login import current_user, login_required
-from project import db, images
+from project import db, images, auth
 from project.models import Recipe, User
 from .forms import AddRecipeForm, EditRecipeForm
 from random import random
@@ -382,16 +382,19 @@ def api_update_recipe(recipe_id):
 ###################
 
 @recipes_blueprint.route('/api/v1_2/recipes', methods=['GET'])
+@auth.login_required
 def api1_2_get_all_recipes():
     return jsonify({'recipes': [recipe.get_url() for recipe in Recipe.query.all()]})
 
 
 @recipes_blueprint.route('/api/v1_2/recipes/<int:recipe_id>', methods=['GET'])
+@auth.login_required
 def api1_2_get_recipe(recipe_id):
     return jsonify(Recipe.query.get_or_404(recipe_id).export_data())
 
 
 @recipes_blueprint.route('/api/v1_2/recipes', methods=['POST'])
+@auth.login_required
 def api1_2_create_recipe():
     new_recipe = Recipe()
     new_recipe.import_data(request.json)
@@ -401,6 +404,7 @@ def api1_2_create_recipe():
 
 
 @recipes_blueprint.route('/api/v1_2/recipes/<int:recipe_id>', methods=['PUT'])
+@auth.login_required
 def api1_2_update_recipe(recipe_id):
     recipe = Recipe.query.get_or_404(recipe_id)
     recipe.import_data(request.json)
@@ -410,8 +414,23 @@ def api1_2_update_recipe(recipe_id):
 
 
 @recipes_blueprint.route('/api/v1_2/recipes/<int:recipe_id>', methods=['DELETE'])
+@auth.login_required
 def api1_2_delete_recipe(recipe_id):
     recipe = Recipe.query.get_or_404(recipe_id)
     db.session.delete(recipe)
     db.session.commit()
     return jsonify({'result': True})
+
+
+@auth.verify_password
+def verify_password(email, password):
+    user = User.query.filter_by(email=email).first()
+    return user is not None and user.is_correct_password(password)
+
+
+@auth.error_handler
+def unauthorized():
+    response = jsonify({'status': 401, 'error': 'unauthorized',
+                        'message': 'please authenticate'})
+    response.status_code = 401
+    return response

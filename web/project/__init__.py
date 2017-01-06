@@ -10,6 +10,7 @@ from flask_mail import Mail
 from flask_uploads import UploadSet, IMAGES, configure_uploads
 from flask_pagedown import PageDown
 from flask_migrate import Migrate
+from flask_httpauth import HTTPBasicAuth
 
 
 ################
@@ -24,6 +25,7 @@ bcrypt = Bcrypt(app)
 mail = Mail(app)
 pagedown = PageDown(app)
 migrate = Migrate(app, db)
+auth = HTTPBasicAuth()
 
 login_manager = LoginManager()
 login_manager.init_app(app)
