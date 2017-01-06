@@ -57,6 +57,17 @@ app.register_blueprint(recipes_blueprint)
 #### custom error pages ####
 ############################
 
+from project.models import ValidationError
+
+
+@app.errorhandler(ValidationError)
+def bad_request(e):
+    response = jsonify({'status': 400, 'error': 'bad request',
+                        'message': e.args[0]})
+    response.status_code = 400
+    return response
+
+
 @app.errorhandler(400)
 def page_not_found(e):
     return make_response(jsonify({'error': 'Not found'}), 400)
@@ -68,8 +79,10 @@ def page_not_found(e):
 
 
 @app.errorhandler(404)
-def page_not_found(e):
-    return make_response(jsonify({'error': 'Not found'}), 404)
+def not_found(e):
+    response = jsonify({'status': 404, 'error': 'not found', 'message': 'invalid resource URI'})
+    response.status_code = 404
+    return response
 
 
 @app.errorhandler(403)

@@ -44,6 +44,31 @@ def add_uri_to_recipe(recipe):
     return new_recipe
 
 
+########################
+#### error handlers ####
+########################
+
+@recipes_blueprint.errorhandler(404)
+def api_error(e):
+    response = jsonify({'status': 404, 'error': 'not found (API!)', 'message': 'invalid resource URI'})
+    response.status_code = 404
+    return response
+
+
+@recipes_blueprint.errorhandler(405)
+def api_error(e):
+    response = jsonify({'status': 405, 'error': 'method not supported (API!)', 'message': 'method is not supported'})
+    response.status_code = 405
+    return response
+
+
+@recipes_blueprint.errorhandler(500)
+def api_error(e):
+    response = jsonify({'status': 500, 'error': 'internal server error (API!)', 'message': 'internal server error occurred'})
+    response.status_code = 500
+    return response
+
+
 ################
 #### routes ####
 ################

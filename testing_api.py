@@ -57,6 +57,20 @@ r = requests.get(url)
 print(r.status_code)
 print(r.text)
 
+# API v1.2 - GET (Individual Recipe - INVALID)
+print('Retrieving recipe #2...')
+url = URL_BASE + 'api/v1_2/recipes/'
+r = requests.get(url)
+print(r.status_code)
+print(r.text)
+
+# API v1.2 - GET (Individual Recipe - INVALID)
+print('Retrieving recipe #17...')
+url = URL_BASE + 'api/v1_2/recipes/17'
+r = requests.get(url)
+print(r.status_code)
+print(r.text)
+
 
 # # API v1.1 - GET (All)
 # print('Retrieving all recipes...')
