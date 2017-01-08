@@ -50,10 +50,12 @@ def load_user(user_id):
 
 from project.users.views import users_blueprint
 from project.recipes.views import recipes_blueprint
+from project.recipes_api.views import recipes_api_blueprint
 
 # register the blueprints
 app.register_blueprint(users_blueprint)
 app.register_blueprint(recipes_blueprint)
+app.register_blueprint(recipes_api_blueprint)
 
 
 ############################
@@ -76,16 +78,16 @@ def page_not_found(e):
     return make_response(jsonify({'error': 'Not found'}), 400)
 
 
-# @app.errorhandler(404)
-# def page_not_found(e):
-#     return render_template('404.html'), 404
-
-
 @app.errorhandler(404)
-def not_found(e):
-    response = jsonify({'status': 404, 'error': 'not found', 'message': 'invalid resource URI'})
-    response.status_code = 404
-    return response
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+
+# @app.errorhandler(404)
+# def not_found(e):
+#     response = jsonify({'status': 404, 'error': 'not found', 'message': 'invalid resource URI'})
+#     response.status_code = 404
+#     return response
 
 
 @app.errorhandler(403)

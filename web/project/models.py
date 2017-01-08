@@ -60,7 +60,7 @@ class Recipe(db.Model):
         return '<id: {}, title: {}, user_id: {}>'.format(self.id, self.recipe_title, self.user_id)
 
     def get_url(self):
-        return url_for('recipes.api1_2_get_recipe', recipe_id=self.id, _external=True)
+        return url_for('recipes_api.api1_2_get_recipe', recipe_id=self.id, _external=True)
 
     def export_data(self):
         return {
