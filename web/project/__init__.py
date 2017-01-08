@@ -26,6 +26,7 @@ mail = Mail(app)
 pagedown = PageDown(app)
 migrate = Migrate(app, db)
 auth = HTTPBasicAuth()
+auth_token = HTTPBasicAuth()
 
 login_manager = LoginManager()
 login_manager.init_app(app)

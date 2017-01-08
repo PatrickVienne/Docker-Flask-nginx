@@ -4,9 +4,9 @@
 #### imports ####
 #################
 
-from flask import render_template, Blueprint, request, redirect, url_for, flash, abort, jsonify
+from flask import render_template, Blueprint, request, redirect, url_for, flash, abort, jsonify, g
 from flask_login import current_user, login_required
-from project import db, images, auth
+from project import db, images, auth, auth_token
 from project.models import Recipe, User
 from .forms import AddRecipeForm, EditRecipeForm
 from random import random
@@ -382,19 +382,19 @@ def api_update_recipe(recipe_id):
 ###################
 
 @recipes_blueprint.route('/api/v1_2/recipes', methods=['GET'])
-@auth.login_required
+@auth_token.login_required
 def api1_2_get_all_recipes():
     return jsonify({'recipes': [recipe.get_url() for recipe in Recipe.query.all()]})
 
 
 @recipes_blueprint.route('/api/v1_2/recipes/<int:recipe_id>', methods=['GET'])
-@auth.login_required
+@auth_token.login_required
 def api1_2_get_recipe(recipe_id):
     return jsonify(Recipe.query.get_or_404(recipe_id).export_data())
 
 
 @recipes_blueprint.route('/api/v1_2/recipes', methods=['POST'])
-@auth.login_required
+@auth_token.login_required
 def api1_2_create_recipe():
     new_recipe = Recipe()
     new_recipe.import_data(request.json)
@@ -404,7 +404,7 @@ def api1_2_create_recipe():
 
 
 @recipes_blueprint.route('/api/v1_2/recipes/<int:recipe_id>', methods=['PUT'])
-@auth.login_required
+@auth_token.login_required
 def api1_2_update_recipe(recipe_id):
     recipe = Recipe.query.get_or_404(recipe_id)
     recipe.import_data(request.json)
@@ -414,7 +414,7 @@ def api1_2_update_recipe(recipe_id):
 
 
 @recipes_blueprint.route('/api/v1_2/recipes/<int:recipe_id>', methods=['DELETE'])
-@auth.login_required
+@auth_token.login_required
 def api1_2_delete_recipe(recipe_id):
     recipe = Recipe.query.get_or_404(recipe_id)
     db.session.delete(recipe)
@@ -422,15 +422,37 @@ def api1_2_delete_recipe(recipe_id):
     return jsonify({'result': True})
 
 
+@recipes_blueprint.route('/get-auth-token')
+@auth.login_required
+def get_auth_token():
+    return jsonify({'token': g.user.generate_auth_token()})
+
+
 @auth.verify_password
 def verify_password(email, password):
-    user = User.query.filter_by(email=email).first()
-    return user is not None and user.is_correct_password(password)
+    g.user = User.query.filter_by(email=email).first()
+    if g.user is None:
+        return False
+    return g.user.is_correct_password(password)
 
 
 @auth.error_handler
 def unauthorized():
     response = jsonify({'status': 401, 'error': 'unauthorized',
                         'message': 'please authenticate'})
+    response.status_code = 401
+    return response
+
+
+@auth_token.verify_password
+def verify_authentication_token(token, unused):
+    g.user = User.verify_auth_token(token)
+    return g.user is not None
+
+
+@auth_token.error_handler
+def unauthorized_token():
+    response = jsonify({'status': 401, 'error': 'unauthorized',
+                        'message': 'please send your authentication token'})
     response.status_code = 401
     return response

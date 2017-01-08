@@ -1,9 +1,10 @@
-from project import db, bcrypt
+from project import db, bcrypt, app
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
 from datetime import datetime
 from markdown import markdown
 from flask import url_for
 import bleach
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 
 # Allowable HTML tags
@@ -160,6 +161,19 @@ class User(db.Model):
         """Return the email address to satisfy Flask-Login's requirements."""
         """Requires use of Python 3"""
         return str(self.id)
+
+    def generate_auth_token(self, expires_in=3600):
+        s = Serializer(app.config['SECRET_KEY'], expires_in=expires_in)
+        return s.dumps({'id': self.id}).decode('utf-8')
+
+    @staticmethod
+    def verify_auth_token(token):
+        s = Serializer(app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except:
+            return None
+        return User.query.get(data['id'])
 
     def __repr__(self):
         return '<User {}>'.format(self.email)
