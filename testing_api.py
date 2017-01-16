@@ -81,6 +81,19 @@ r = requests.get(url, auth=token_auth)
 print(r.status_code)
 print(r.text)
 
+# API v1.2 - GET (All)
+print('Retrieving all recipes...')
+url = URL_BASE + 'api/v1_2/recipes'
+r = requests.get(url, auth=token_auth)
+print(r.status_code)
+print(r.text)
+all_recipes = r.json()
+for recipe_url in all_recipes['recipes']:
+    print('Retrieving recipe...')
+    r = requests.get(recipe_url, auth=token_auth)
+    print(r.status_code)
+    print(r.text)
+
 
 # # API v1.1 - GET (All)
 # print('Retrieving all recipes...')
