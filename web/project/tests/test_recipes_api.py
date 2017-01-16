@@ -35,7 +35,7 @@ class RecipesApiTests(unittest.TestCase):
         self.create_users()
         self.create_recipes()
         mail.init_app(app)
-        self.assertEquals(app.debug, False)
+        self.assertEqual(app.debug, False)
 
     # executed after each test
     def tearDown(self):
@@ -78,17 +78,8 @@ class RecipesApiTests(unittest.TestCase):
         headers['Accept'] = 'application/json'
         return self.app.get('/get-auth-token', headers=headers)
 
-    def authenticate_admin_user(self):
-        auth = 'Basic ' + b64encode((self.admin_email + ':' + self.admin_password).encode('utf-8')).decode('utf-8')
-        headers = {}
-        headers['Authorization'] = auth
-        headers['Content-Type'] = 'application/json'
-        headers['Accept'] = 'application/json'
-        return self.app.get('/get-auth-token', headers=headers)
-
     def get_headers_authenticated_admin(self):
         headers = {}
-        # response = self.authenticate_admin_user()
         response = self.authenticate_user(self.admin_email, self.admin_password)
         json_data = json.loads(response.data.decode('utf-8'))
         auth = 'Basic ' + b64encode((json_data['token'] + ':' + 'unused').encode('utf-8')).decode('utf-8')
@@ -108,12 +99,6 @@ class RecipesApiTests(unittest.TestCase):
         self.assertIn(b'token', response.data)
 
     def test_recipes_api_invalid_authentication_normal_user(self):
-        # auth = 'Basic ' + b64encode((self.user_email + ':' + self.user_password).encode('utf-8')).decode('utf-8')
-        # headers = {}
-        # headers['Authorization'] = auth
-        # headers['Content-Type'] = 'application/json'
-        # headers['Accept'] = 'application/json'
-        # response = self.app.get('/get-auth-token', headers=headers)
         response = self.authenticate_user(self.user_email, self.user_password)
         json_data = json.loads(response.data.decode('utf-8'))
 
@@ -122,12 +107,6 @@ class RecipesApiTests(unittest.TestCase):
         self.assertIn('please authenticate', json_data['message'])
 
     def test_recipes_api_invalid_authentication_invalid_user(self):
-        # auth = 'Basic ' + b64encode((self.admin_email + ':' + 'FlaskIsOK').encode('utf-8')).decode('utf-8')
-        # headers = {}
-        # headers['Authorization'] = auth
-        # headers['Content-Type'] = 'application/json'
-        # headers['Accept'] = 'application/json'
-        # response = self.app.get('/get-auth-token', headers=headers)
         response = self.authenticate_user(self.admin_email, 'FlaskIsOK')
         json_data = json.loads(response.data.decode('utf-8'))
 
@@ -135,31 +114,26 @@ class RecipesApiTests(unittest.TestCase):
         self.assertIn('unauthorized', json_data['error'])
         self.assertIn('please authenticate', json_data['message'])
 
+    def test_recipes_api_invalid_token(self):
+        headers = {}
+        response = self.authenticate_user(self.admin_email, self.admin_password)
+        json_data = json.loads(response.data.decode('utf-8'))
+        token = 'InvalidTokenInvalidToken'
+        auth = 'Basic ' + b64encode((token + ':' + 'unused').encode('utf-8')).decode('utf-8')
+        headers['Authorization'] = auth
+        headers['Content-Type'] = 'application/json'
+        headers['Accept'] = 'application/json'
+        response = self.app.get('/api/v1_2/recipes', headers=headers)
+
+        self.assertEqual(response.status_code, 401)
+
     def test_recipes_api_get_all_recipes(self):
-        # # response = self.authenticate_admin_user()
-        # response = self.authenticate_user(self.admin_email, self.admin_password)
-        # json_data = json.loads(response.data.decode('utf-8'))
-        #
-        # auth = 'Basic ' + b64encode((json_data['token'] + ':' + 'unused').encode('utf-8')).decode('utf-8')
-        # headers = {}
-        # headers['Authorization'] = auth
-        # headers['Content-Type'] = 'application/json'
-        # headers['Accept'] = 'application/json'
         headers = self.get_headers_authenticated_admin()
         response = self.app.get('/api/v1_2/recipes', headers=headers)
-        json_data = json.loads(response.data.decode('utf-8'))
 
         self.assertEqual(response.status_code, 200)
-        print(json_data)
 
     def test_recipes_api_create_new_recipe(self):
-        # response = self.authenticate_admin_user()
-        # json_data = json.loads(response.data)
-        # auth = 'Basic ' + b64encode((json_data['token'] + ':' + 'unused').encode('utf-8')).decode('utf-8')
-        # headers = {}
-        # headers['Authorization'] = auth
-        # headers['Content-Type'] = 'application/json'
-        # headers['Accept'] = 'application/json'
         headers = self.get_headers_authenticated_admin()
         json_data = {'title': 'Tacos2', 'description': 'My favorite tacos!', 'recipe_type': 'Dinner'}
         response = self.app.post('/api/v1_2/recipes', data=json.dumps(json_data), headers=headers, follow_redirects=True)
@@ -175,11 +149,42 @@ class RecipesApiTests(unittest.TestCase):
         self.assertIn('Hamburgers', json_data['title'])
         self.assertIn('Classic dish elevated with pretzel buns.', json_data['description'])
         self.assertIn('api/v1_2/recipes/1', json_data['self_url'])
-        print(json_data)
 
     def test_recipes_api_get_individual_recipe_invalid(self):
         headers = self.get_headers_authenticated_admin()
         response = self.app.get('/api/v1_2/recipes/5', headers=headers)
+        json_data = json.loads(response.data.decode('utf-8'))
+
+        self.assertEqual(response.status_code, 404)
+        self.assertIn('invalid resource URI', json_data['message'])
+        self.assertIn('not found (API!)', json_data['error'])
+
+    def test_recipes_api_delete_recipe_valid(self):
+        headers = self.get_headers_authenticated_admin()
+        response = self.app.delete('/api/v1_2/recipes/2', headers=headers, follow_redirects=True)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_recipes_api_delete_recipe_invalid(self):
+        headers = self.get_headers_authenticated_admin()
+        response = self.app.delete('/api/v1_2/recipes/16', headers=headers, follow_redirects=True)
+        json_data = json.loads(response.data.decode('utf-8'))
+
+        self.assertEqual(response.status_code, 404)
+        self.assertIn('invalid resource URI', json_data['message'])
+        self.assertIn('not found (API!)', json_data['error'])
+
+    def test_recipes_api_put_recipe_valid(self):
+        headers = self.get_headers_authenticated_admin()
+        json_data = {'title': 'Updated recipe', 'description': 'My favorite recipe'}
+        response = self.app.put('/api/v1_2/recipes/3', data=json.dumps(json_data), headers=headers, follow_redirects=True)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_recipes_api_put_recipe_invalid(self):
+        headers = self.get_headers_authenticated_admin()
+        json_data_input = {'title': 'Updated recipe', 'description': 'My favorite recipe'}
+        response = self.app.put('/api/v1_2/recipes/15', data=json.dumps(json_data_input), headers=headers, follow_redirects=True)
         json_data = json.loads(response.data.decode('utf-8'))
 
         self.assertEqual(response.status_code, 404)

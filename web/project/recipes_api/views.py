@@ -20,17 +20,6 @@ recipes_api_blueprint = Blueprint('recipes_api', __name__)
 #### helper functions ####
 ##########################
 
-def get_all_recipes_with_users():
-    # SQL: SELECT * FROM recipes JOIN users ON recipes.user_id = users.id;
-    return db.session.query(Recipe, User).join(User).all()
-
-
-def add_uri_to_recipe(recipe):
-    new_recipe = recipe
-    new_recipe.id = url_for('recipes.api_get_recipe', recipe_id=recipe.id, _external=True)
-    return new_recipe
-
-
 @auth.verify_password
 def verify_password(email, password):
     g.user = User.query.filter_by(email=email).first()
@@ -95,7 +84,9 @@ def unauthorized_token():
 @recipes_api_blueprint.before_request
 @auth_token.login_required
 def before_request():
+    """All routes in this blueprint require authentication."""
     pass
+
 
 @app.route('/get-auth-token')
 @auth.login_required
@@ -116,7 +107,7 @@ def api1_2_get_recipe(recipe_id):
 @recipes_api_blueprint.route('/api/v1_2/recipes', methods=['POST'])
 def api1_2_create_recipe():
     new_recipe = Recipe()
-    new_recipe.import_data(request.json)
+    new_recipe.import_data(request.get_json())
     db.session.add(new_recipe)
     db.session.commit()
     return jsonify({}), 201, {'Location': new_recipe.get_url()}
