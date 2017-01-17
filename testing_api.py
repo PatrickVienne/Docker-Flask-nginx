@@ -10,6 +10,7 @@ print('Retrieving authentication token...')
 url = URL_BASE + 'get-auth-token'
 r = requests.get(url, auth=auth)
 print(r.status_code)
+print(r.headers)
 print(r.text)
 auth_request = r.json()
 token_auth = (auth_request['token'], 'unused')

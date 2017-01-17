@@ -97,6 +97,10 @@ class RecipesApiTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'token', response.data)
+        self.assertIn('private', response.headers['Cache-Control'])
+        self.assertIn('no-cache', response.headers['Cache-Control'])
+        self.assertIn('no-store', response.headers['Cache-Control'])
+        self.assertIn('max-age=0', response.headers['Cache-Control'])
 
     def test_recipes_api_invalid_authentication_normal_user(self):
         response = self.authenticate_user(self.user_email, self.user_password)
@@ -191,6 +195,23 @@ class RecipesApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertIn('invalid resource URI', json_data['message'])
         self.assertIn('not found (API!)', json_data['error'])
+
+    def test_recipes_api_check_etag(self):
+        headers = self.get_headers_authenticated_admin()
+        response = self.app.get('/api/v1_2/recipes', headers=headers)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.headers['ETag'])
+        etag = response.headers['ETag']
+        headers['If-None-Match'] = etag
+        response2 = self.app.get('/api/v1_2/recipes', headers=headers)
+
+        self.assertEqual(response2.status_code, 304)
+
+        headers['If-None-Match'] = 'asfjskdjflakdsjflsdkfjsdlkfj'  # INVALID
+        response3 = self.app.get('/api/v1_2/recipes', headers=headers)
+
+        self.assertEqual(response3.status_code, 200)
 
 
 if __name__ == "__main__":

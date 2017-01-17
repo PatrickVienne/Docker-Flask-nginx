@@ -7,6 +7,7 @@
 from flask import render_template, Blueprint, request, redirect, url_for, abort, jsonify, g
 from project import db, auth, auth_token, app
 from project.models import Recipe, User
+from .decorators import no_cache, etag
 
 
 ################
@@ -88,8 +89,16 @@ def before_request():
     pass
 
 
+@recipes_api_blueprint.after_request
+@etag
+def after_request(rv):
+    """Generate an ETag header for all routes in this blueprint."""
+    return rv
+
+
 @app.route('/get-auth-token')
 @auth.login_required
+@no_cache
 def get_auth_token():
     return jsonify({'token': g.user.generate_auth_token()})
 
