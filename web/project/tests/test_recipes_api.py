@@ -139,6 +139,7 @@ class RecipesApiTests(unittest.TestCase):
         response = self.app.post('/api/v1_2/recipes', data=json.dumps(json_data), headers=headers, follow_redirects=True)
 
         self.assertEqual(response.status_code, 201)
+        self.assertIn('/api/v1_2/recipes/5', response.headers['Location'])
 
     def test_recipes_api_get_individual_recipe_valid(self):
         headers = self.get_headers_authenticated_admin()
