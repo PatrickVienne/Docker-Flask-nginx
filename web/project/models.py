@@ -1,14 +1,23 @@
-from project import db, bcrypt
+from project import db, bcrypt, app
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
 from datetime import datetime
 from markdown import markdown
+from flask import url_for
 import bleach
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 
 # Allowable HTML tags
 allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                 'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
                 'h1', 'h2', 'h3', 'p']
+
+
+class ValidationError(ValueError):
+    """Class for handling validation errors during
+       import of recipe data via API
+    """
+    pass
 
 
 class Recipe(db.Model):
@@ -19,9 +28,9 @@ class Recipe(db.Model):
     __tablename__ = "recipes"
 
     id = db.Column(db.Integer, primary_key=True)
-    recipe_title = db.Column(db.String, nullable=False)
-    recipe_description = db.Column(db.String, nullable=False)
-    is_public = db.Column(db.Boolean, nullable=False)
+    recipe_title = db.Column(db.String, nullable=True)
+    recipe_description = db.Column(db.String, nullable=True)
+    is_public = db.Column(db.Boolean, nullable=True)
     image_filename = db.Column(db.String, default=None, nullable=True)
     image_url = db.Column(db.String, default=None, nullable=True)
     recipe_type = db.Column(db.String, default=None, nullable=True)
@@ -33,8 +42,8 @@ class Recipe(db.Model):
     inspiration = db.Column(db.String, default=None, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    def __init__(self, title, description, user_id, is_public, image_filename=None, image_url=None, recipe_type=None,
-                 rating=None, ingredients=None, recipe_steps=None, inspiration=None):
+    def __init__(self, title=None, description=None, user_id=None, is_public=None, image_filename=None, image_url=None,
+                 recipe_type=None, rating=None, ingredients=None, recipe_steps=None, inspiration=None):
         self.recipe_title = title
         self.recipe_description = description
         self.is_public = is_public
@@ -49,6 +58,32 @@ class Recipe(db.Model):
 
     def __repr__(self):
         return '<id: {}, title: {}, user_id: {}>'.format(self.id, self.recipe_title, self.user_id)
+
+    def get_url(self):
+        return url_for('recipes_api.api1_2_get_recipe', recipe_id=self.id, _external=True)
+
+    def export_data(self):
+        return {
+            'self_url': self.get_url(),
+            'title': self.recipe_title,
+            'description': self.recipe_description,
+            'public': self.is_public,
+            'image_filename': self.image_filename,
+            'image_url': self.image_url,
+            'recipe_type': self.recipe_type,
+            'rating': self.rating,
+            'ingredients': self.ingredients,
+            'recipe_steps': self.recipe_steps,
+            'inspiration': self.inspiration,
+            'user_id': self.user_id
+        }
+
+    def import_data(self, data):
+        try:
+            self.recipe_title = data['title']
+        except KeyError as e:
+            raise ValidationError('Invalid recipe: missing ' + e.args[0])
+        return self
 
     @staticmethod
     def on_changed_ingredients(target, value, oldvalue, iterator):
@@ -126,6 +161,19 @@ class User(db.Model):
         """Return the email address to satisfy Flask-Login's requirements."""
         """Requires use of Python 3"""
         return str(self.id)
+
+    def generate_auth_token(self, expires_in=3600):
+        s = Serializer(app.config['SECRET_KEY'], expires_in=expires_in)
+        return s.dumps({'id': self.id}).decode('utf-8')
+
+    @staticmethod
+    def verify_auth_token(token):
+        s = Serializer(app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except:
+            return None
+        return User.query.get(data['id'])
 
     def __repr__(self):
         return '<User {}>'.format(self.email)
