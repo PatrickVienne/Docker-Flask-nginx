@@ -5,7 +5,7 @@
 #################
 
 from flask import render_template, Blueprint, request, redirect, url_for, abort, jsonify, g
-from project import db, auth, auth_token, app
+from project import db, auth, auth_token, app, images
 from project.models import Recipe, User
 from .decorators import no_cache, etag
 
@@ -125,10 +125,36 @@ def api1_2_create_recipe():
 @recipes_api_blueprint.route('/api/v1_2/recipes/<int:recipe_id>', methods=['PUT'])
 def api1_2_update_recipe(recipe_id):
     recipe = Recipe.query.get_or_404(recipe_id)
-    recipe.import_data(request.json)
+    recipe.import_data(request)
     db.session.add(recipe)
     db.session.commit()
-    return jsonify({'result': True})
+    # print('request: {}'.format(request))
+    # print('request.files: {}'.format(str(request.files.getlist('recipe_image'))))
+    # print('request.data: {}'.format(str(request.data)))
+    # print('request.files[files]: {}'.format(str(request.files['files'])))
+    # print('request.files[recipe_image]: {}'.format(str(request.files['recipe_image'])))
+
+    # if 'recipe_image' in request.files:
+    #     print('In first IF loop...')
+    #     print('request.files: {}'.format(str(request.files)))
+    #     print('request.files[recipe_image]: {}'.format(str(request.files['recipe_image'])))
+    #     print('request.files[recipe_image].filename: {}'.format(str(request.files['recipe_image'].filename)))
+    #     filename = images.save(request.files['recipe_image'])
+    #     url = images.url(filename)
+    #
+    #     recipe.image_filename = filename
+    #     recipe.image_url = images.url(filename)
+    #     print('filename: {}'.format(filename))
+    #     print('url: {}'.format(url))
+    #     db.session.add(recipe)
+    #     db.session.commit()
+    #     return jsonify({'result': 'True', 'url': url})
+    # else:
+    #     recipe.import_data(request.get_json())
+    #     db.session.add(recipe)
+    #     db.session.commit()
+    #     return jsonify({'result': 'True'})
+    return jsonify({'result': 'True'})
 
 
 @recipes_api_blueprint.route('/api/v1_2/recipes/<int:recipe_id>', methods=['DELETE'])

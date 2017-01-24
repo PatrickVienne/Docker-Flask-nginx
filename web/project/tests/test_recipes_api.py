@@ -3,8 +3,12 @@
 
 import os
 import unittest
+import io
 from flask import json
 from base64 import b64encode
+from werkzeug.test import EnvironBuilder
+from werkzeug.wrappers import Request
+from werkzeug.datastructures import FileStorage
 
 from project import app, db, mail
 from project.models import Recipe, User
@@ -92,6 +96,7 @@ class RecipesApiTests(unittest.TestCase):
     #### tests ####
     ###############
 
+    @unittest.skip("Debug")
     def test_recipes_api_valid_authentication(self):
         response = self.authenticate_user(self.admin_email, self.admin_password)
 
@@ -102,6 +107,7 @@ class RecipesApiTests(unittest.TestCase):
         self.assertIn('no-store', response.headers['Cache-Control'])
         self.assertIn('max-age=0', response.headers['Cache-Control'])
 
+    @unittest.skip("Debug")
     def test_recipes_api_invalid_authentication_normal_user(self):
         response = self.authenticate_user(self.user_email, self.user_password)
         json_data = json.loads(response.data.decode('utf-8'))
@@ -110,6 +116,7 @@ class RecipesApiTests(unittest.TestCase):
         self.assertIn('unauthorized', json_data['error'])
         self.assertIn('please authenticate', json_data['message'])
 
+    @unittest.skip("Debug")
     def test_recipes_api_invalid_authentication_invalid_user(self):
         response = self.authenticate_user(self.admin_email, 'FlaskIsOK')
         json_data = json.loads(response.data.decode('utf-8'))
@@ -118,6 +125,7 @@ class RecipesApiTests(unittest.TestCase):
         self.assertIn('unauthorized', json_data['error'])
         self.assertIn('please authenticate', json_data['message'])
 
+    @unittest.skip("Debug")
     def test_recipes_api_invalid_token(self):
         headers = {}
         response = self.authenticate_user(self.admin_email, self.admin_password)
@@ -131,12 +139,14 @@ class RecipesApiTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 401)
 
+    @unittest.skip("Debug")
     def test_recipes_api_get_all_recipes(self):
         headers = self.get_headers_authenticated_admin()
         response = self.app.get('/api/v1_2/recipes', headers=headers)
 
         self.assertEqual(response.status_code, 200)
 
+    @unittest.skip("Debug")
     def test_recipes_api_create_new_recipe(self):
         headers = self.get_headers_authenticated_admin()
         json_data = {'title': 'Tacos2', 'description': 'My favorite tacos!', 'recipe_type': 'Dinner'}
@@ -145,6 +155,7 @@ class RecipesApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertIn('/api/v1_2/recipes/5', response.headers['Location'])
 
+    @unittest.skip("Debug")
     def test_recipes_api_get_individual_recipe_valid(self):
         headers = self.get_headers_authenticated_admin()
         response = self.app.get('/api/v1_2/recipes/1', headers=headers)
@@ -155,6 +166,7 @@ class RecipesApiTests(unittest.TestCase):
         self.assertIn('Classic dish elevated with pretzel buns.', json_data['description'])
         self.assertIn('api/v1_2/recipes/1', json_data['self_url'])
 
+    @unittest.skip("Debug")
     def test_recipes_api_get_individual_recipe_invalid(self):
         headers = self.get_headers_authenticated_admin()
         response = self.app.get('/api/v1_2/recipes/5', headers=headers)
@@ -164,12 +176,14 @@ class RecipesApiTests(unittest.TestCase):
         self.assertIn('invalid resource URI', json_data['message'])
         self.assertIn('not found (API!)', json_data['error'])
 
+    @unittest.skip("Debug")
     def test_recipes_api_delete_recipe_valid(self):
         headers = self.get_headers_authenticated_admin()
         response = self.app.delete('/api/v1_2/recipes/2', headers=headers, follow_redirects=True)
 
         self.assertEqual(response.status_code, 200)
 
+    @unittest.skip("Debug")
     def test_recipes_api_delete_recipe_invalid(self):
         headers = self.get_headers_authenticated_admin()
         response = self.app.delete('/api/v1_2/recipes/16', headers=headers, follow_redirects=True)
@@ -179,13 +193,17 @@ class RecipesApiTests(unittest.TestCase):
         self.assertIn('invalid resource URI', json_data['message'])
         self.assertIn('not found (API!)', json_data['error'])
 
+    @unittest.skip("Debug")
     def test_recipes_api_put_recipe_valid(self):
         headers = self.get_headers_authenticated_admin()
         json_data = {'title': 'Updated recipe', 'description': 'My favorite recipe'}
         response = self.app.put('/api/v1_2/recipes/3', data=json.dumps(json_data), headers=headers, follow_redirects=True)
+        json_data = json.loads(response.data.decode('utf-8'))
 
         self.assertEqual(response.status_code, 200)
+        self.assertIn('True', json_data['result'])
 
+    @unittest.skip("Debug")
     def test_recipes_api_put_recipe_invalid(self):
         headers = self.get_headers_authenticated_admin()
         json_data_input = {'title': 'Updated recipe', 'description': 'My favorite recipe'}
@@ -196,6 +214,7 @@ class RecipesApiTests(unittest.TestCase):
         self.assertIn('invalid resource URI', json_data['message'])
         self.assertIn('not found (API!)', json_data['error'])
 
+    @unittest.skip("Debug")
     def test_recipes_api_check_etag(self):
         headers = self.get_headers_authenticated_admin()
         response = self.app.get('/api/v1_2/recipes', headers=headers)
@@ -213,7 +232,37 @@ class RecipesApiTests(unittest.TestCase):
 
         self.assertEqual(response3.status_code, 200)
 
+    def test_recipes_api_sending_file(self):
+        # data= {}
+        # payload = {}
+        headers = self.get_headers_authenticated_admin()
+        # files = {'recipe_image': open('IMG_6127.JPG', 'rb')}
+        # data = dict(recipe_image=(io.BytesIO(b"this is a test"), 'IMG1.jpg'),)
+        # data = {'recipe_image': (io.BytesIO(b"this is a test"), 'IMG1.jpg')}
+        # handle = open('IMG_6127.JPG', 'rb')
+        # fs = FileStorage(stream=handle, filename='IMG_6127.JPG', name='recipe_image')
+        # payload['files'] = fs
+        # test_client.post(url, data=payload)
+        # data['file'] = (io.BytesIO(b"abcdef"), 'test.jpg')
+        # filename = os.path.join('project', 'tests', 'IMG_6127.JPG')
+        # print('filename: {}'.format(filename))
+        with open(os.path.join('project', 'tests', 'IMG_6127.JPG'), 'rb') as fp:
+            file = FileStorage(fp)
+            response = self.app.put('/api/v1_2/recipes/2', data={'recipe_image': file}, headers=headers,
+                                    content_type='multipart/form-data', follow_redirects=True)
+
+        # response = self.app.put('/api/v1_2/recipes/2', data=data, headers=headers, content_type='multipart/form-data', follow_redirects=True)
+        # response = self.app.put('/api/v1_2/recipes/2', data=dict(files={'file': open('IMG_6127.JPG', 'rb')}), headers=headers, follow_redirects=True)
+        # json_data = json.loads(response.data.decode('utf-8'))
+            print(response.data)
+            print(response.status_code)
+            json_data = json.loads(response.data.decode('utf-8'))
+            print(json_data)
+
+            self.assertEqual(response.status_code, 200)
+            # self.assertIn('IMG_6127', json_data['url'])
+            self.assertIn('True', json_data['result'])
+
 
 if __name__ == "__main__":
     unittest.main()
-

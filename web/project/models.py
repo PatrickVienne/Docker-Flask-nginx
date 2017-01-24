@@ -1,4 +1,4 @@
-from project import db, bcrypt, app
+from project import db, bcrypt, app, images
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
 from datetime import datetime
 from markdown import markdown
@@ -78,9 +78,39 @@ class Recipe(db.Model):
             'user_id': self.user_id
         }
 
-    def import_data(self, data):
+    def import_data(self, request):
         try:
-            self.recipe_title = data['title']
+            if 'recipe_image' in request.files:
+                print('In import_data()...')
+                print('request.files: {}'.format(str(request.files)))
+                print('request.files[recipe_image]: {}'.format(str(request.files['recipe_image'])))
+                print('request.files[recipe_image].filename: {}'.format(str(request.files['recipe_image'].filename)))
+                filename = images.save(request.files['recipe_image'])
+                url = images.url(filename)
+
+                self.image_filename = filename
+                self.image_url = images.url(filename)
+                print('filename: {}'.format(filename))
+                print('url: {}'.format(url))
+            else:
+                self.recipe_title = request.get_json()['title']
+        except KeyError as e:
+            raise ValidationError('Invalid recipe: missing ' + e.args[0])
+        return self
+
+    def import_image(self, request):
+        try:
+            print('In import_image()...')
+            print('request.files: {}'.format(str(request.files)))
+            print('request.files[recipe_image]: {}'.format(str(request.files['recipe_image'])))
+            print('request.files[recipe_image].filename: {}'.format(str(request.files['recipe_image'].filename)))
+            filename = images.save(request.files['recipe_image'])
+            url = images.url(filename)
+
+            recipe.image_filename = filename
+            recipe.image_url = images.url(filename)
+            print('filename: {}'.format(filename))
+            print('url: {}'.format(url))
         except KeyError as e:
             raise ValidationError('Invalid recipe: missing ' + e.args[0])
         return self
