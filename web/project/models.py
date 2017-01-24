@@ -1,4 +1,4 @@
-from project import db, bcrypt, app
+from project import db, bcrypt, app, images
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
 from datetime import datetime
 from markdown import markdown
@@ -78,9 +78,30 @@ class Recipe(db.Model):
             'user_id': self.user_id
         }
 
-    def import_data(self, data):
+    def import_data(self, request):
+        """Import the data for this recipe by either saving the image associated
+        with this recipe or saving the metadata associated with the recipe. If
+        the metadata is being processed, the title and description of the recipe
+        must always be specified."""
         try:
-            self.recipe_title = data['title']
+            if 'recipe_image' in request.files:
+                filename = images.save(request.files['recipe_image'])
+                self.image_filename = filename
+                self.image_url = images.url(filename)
+            else:
+                json_data = request.get_json()
+                self.recipe_title = json_data['title']
+                self.recipe_description = json_data['description']
+                if 'recipe_type' in json_data:
+                    self.recipe_type = json_data['recipe_type']
+                if 'rating' in json_data:
+                    self.rating = json_data['rating']
+                if 'ingredients' in json_data:
+                    self.ingredients = json_data['ingredients']
+                if 'recipe_steps' in json_data:
+                    self.recipe_steps = json_data['recipe_steps']
+                if 'inspiration' in json_data:
+                    self.inspiration = json_data['inspiration']
         except KeyError as e:
             raise ValidationError('Invalid recipe: missing ' + e.args[0])
         return self

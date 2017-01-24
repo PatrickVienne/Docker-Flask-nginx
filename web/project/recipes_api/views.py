@@ -5,7 +5,7 @@
 #################
 
 from flask import render_template, Blueprint, request, redirect, url_for, abort, jsonify, g
-from project import db, auth, auth_token, app
+from project import db, auth, auth_token, app, images
 from project.models import Recipe, User
 from .decorators import no_cache, etag
 
@@ -116,7 +116,7 @@ def api1_2_get_recipe(recipe_id):
 @recipes_api_blueprint.route('/api/v1_2/recipes', methods=['POST'])
 def api1_2_create_recipe():
     new_recipe = Recipe()
-    new_recipe.import_data(request.get_json())
+    new_recipe.import_data(request)
     db.session.add(new_recipe)
     db.session.commit()
     return jsonify({}), 201, {'Location': new_recipe.get_url()}
@@ -125,10 +125,10 @@ def api1_2_create_recipe():
 @recipes_api_blueprint.route('/api/v1_2/recipes/<int:recipe_id>', methods=['PUT'])
 def api1_2_update_recipe(recipe_id):
     recipe = Recipe.query.get_or_404(recipe_id)
-    recipe.import_data(request.json)
+    recipe.import_data(request)
     db.session.add(recipe)
     db.session.commit()
-    return jsonify({'result': True})
+    return jsonify({'result': 'True'})
 
 
 @recipes_api_blueprint.route('/api/v1_2/recipes/<int:recipe_id>', methods=['DELETE'])

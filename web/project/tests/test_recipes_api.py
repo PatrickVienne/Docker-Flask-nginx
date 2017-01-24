@@ -5,6 +5,7 @@ import os
 import unittest
 from flask import json
 from base64 import b64encode
+from werkzeug.datastructures import FileStorage
 
 from project import app, db, mail
 from project.models import Recipe, User
@@ -183,8 +184,10 @@ class RecipesApiTests(unittest.TestCase):
         headers = self.get_headers_authenticated_admin()
         json_data = {'title': 'Updated recipe', 'description': 'My favorite recipe'}
         response = self.app.put('/api/v1_2/recipes/3', data=json.dumps(json_data), headers=headers, follow_redirects=True)
+        json_data = json.loads(response.data.decode('utf-8'))
 
         self.assertEqual(response.status_code, 200)
+        self.assertIn('True', json_data['result'])
 
     def test_recipes_api_put_recipe_invalid(self):
         headers = self.get_headers_authenticated_admin()
@@ -213,7 +216,17 @@ class RecipesApiTests(unittest.TestCase):
 
         self.assertEqual(response3.status_code, 200)
 
+    def test_recipes_api_sending_file(self):
+        headers = self.get_headers_authenticated_admin()
+        with open(os.path.join('project', 'tests', 'IMG_6127.JPG'), 'rb') as fp:
+            file = FileStorage(fp)
+            response = self.app.put('/api/v1_2/recipes/2', data={'recipe_image': file}, headers=headers,
+                                    content_type='multipart/form-data', follow_redirects=True)
+            json_data = json.loads(response.data.decode('utf-8'))
+
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('True', json_data['result'])
+
 
 if __name__ == "__main__":
     unittest.main()
-
