@@ -116,7 +116,7 @@ def api1_2_get_recipe(recipe_id):
 @recipes_api_blueprint.route('/api/v1_2/recipes', methods=['POST'])
 def api1_2_create_recipe():
     new_recipe = Recipe()
-    new_recipe.import_data(request.get_json())
+    new_recipe.import_data(request)
     db.session.add(new_recipe)
     db.session.commit()
     return jsonify({}), 201, {'Location': new_recipe.get_url()}
@@ -128,32 +128,6 @@ def api1_2_update_recipe(recipe_id):
     recipe.import_data(request)
     db.session.add(recipe)
     db.session.commit()
-    # print('request: {}'.format(request))
-    # print('request.files: {}'.format(str(request.files.getlist('recipe_image'))))
-    # print('request.data: {}'.format(str(request.data)))
-    # print('request.files[files]: {}'.format(str(request.files['files'])))
-    # print('request.files[recipe_image]: {}'.format(str(request.files['recipe_image'])))
-
-    # if 'recipe_image' in request.files:
-    #     print('In first IF loop...')
-    #     print('request.files: {}'.format(str(request.files)))
-    #     print('request.files[recipe_image]: {}'.format(str(request.files['recipe_image'])))
-    #     print('request.files[recipe_image].filename: {}'.format(str(request.files['recipe_image'].filename)))
-    #     filename = images.save(request.files['recipe_image'])
-    #     url = images.url(filename)
-    #
-    #     recipe.image_filename = filename
-    #     recipe.image_url = images.url(filename)
-    #     print('filename: {}'.format(filename))
-    #     print('url: {}'.format(url))
-    #     db.session.add(recipe)
-    #     db.session.commit()
-    #     return jsonify({'result': 'True', 'url': url})
-    # else:
-    #     recipe.import_data(request.get_json())
-    #     db.session.add(recipe)
-    #     db.session.commit()
-    #     return jsonify({'result': 'True'})
     return jsonify({'result': 'True'})
 
 

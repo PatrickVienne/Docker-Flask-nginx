@@ -79,38 +79,29 @@ class Recipe(db.Model):
         }
 
     def import_data(self, request):
+        """Import the data for this recipe by either saving the image associated
+        with this recipe or saving the metadata associated with the recipe. If
+        the metadata is being processed, the title and description of the recipe
+        must always be specified."""
         try:
             if 'recipe_image' in request.files:
-                print('In import_data()...')
-                print('request.files: {}'.format(str(request.files)))
-                print('request.files[recipe_image]: {}'.format(str(request.files['recipe_image'])))
-                print('request.files[recipe_image].filename: {}'.format(str(request.files['recipe_image'].filename)))
                 filename = images.save(request.files['recipe_image'])
-                url = images.url(filename)
-
                 self.image_filename = filename
                 self.image_url = images.url(filename)
-                print('filename: {}'.format(filename))
-                print('url: {}'.format(url))
             else:
-                self.recipe_title = request.get_json()['title']
-        except KeyError as e:
-            raise ValidationError('Invalid recipe: missing ' + e.args[0])
-        return self
-
-    def import_image(self, request):
-        try:
-            print('In import_image()...')
-            print('request.files: {}'.format(str(request.files)))
-            print('request.files[recipe_image]: {}'.format(str(request.files['recipe_image'])))
-            print('request.files[recipe_image].filename: {}'.format(str(request.files['recipe_image'].filename)))
-            filename = images.save(request.files['recipe_image'])
-            url = images.url(filename)
-
-            recipe.image_filename = filename
-            recipe.image_url = images.url(filename)
-            print('filename: {}'.format(filename))
-            print('url: {}'.format(url))
+                json_data = request.get_json()
+                self.recipe_title = json_data['title']
+                self.recipe_description = json_data['description']
+                if 'recipe_type' in json_data:
+                    self.recipe_type = json_data['recipe_type']
+                if 'rating' in json_data:
+                    self.rating = json_data['rating']
+                if 'ingredients' in json_data:
+                    self.ingredients = json_data['ingredients']
+                if 'recipe_steps' in json_data:
+                    self.recipe_steps = json_data['recipe_steps']
+                if 'inspiration' in json_data:
+                    self.inspiration = json_data['inspiration']
         except KeyError as e:
             raise ValidationError('Invalid recipe: missing ' + e.args[0])
         return self
