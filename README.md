@@ -3,7 +3,7 @@
 Family Recipe web application for keeping track of your favorite recipes.
 
 ## Website
-TBD
+http://www.kennedyfamilyrecipes.com
 
 ## What Does This Tool Do?
 Keeps track of all your recipes.
@@ -33,3 +33,6 @@ This application is written using Python 3.4.3.  The database used is PostgreSQL
 
 In the top-level folder:
     % nose2
+
+For running a specific module:
+    % nose2 -v project.tests.test_recipes_api
