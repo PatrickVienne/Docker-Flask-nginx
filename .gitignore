@@ -12,6 +12,11 @@ __pycache__/
 # Instance Folder - used for configuration parameters
 /web/instance/db_create_full.py
 /web/instance/flask_full.cfg
+/web/instance/*.db
 
 # Initialization file for Postgress Docker Image
 /postgresql/Dockerfile
+
+# Coverage output
+/web/.coverage
+/web/htmlcov/

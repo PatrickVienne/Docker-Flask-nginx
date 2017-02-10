@@ -1,11 +1,10 @@
 unittests:
   stage: test
-  image: python:latest
+  image: python:3.4.5
   script:
     - cd web
     - pip install -q -r requirements.txt
+    - python -c "import sys; print('\n'.join(sys.path))"
     - nose2 -v project.tests.test_recipes_api
-    - coverage run project/tests/test_recipes_api.py
-    - coverage report project/recipes_api/*.py
   tags:
     - docker
