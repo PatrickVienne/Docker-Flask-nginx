@@ -2,6 +2,8 @@
 #### imports ####
 #################
 
+from os.path import join, isfile
+
 from flask import Flask, render_template, make_response, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -18,7 +20,10 @@ from flask_httpauth import HTTPBasicAuth
 ################
 
 app = Flask(__name__, instance_relative_config=True)
-app.config.from_pyfile('flask.cfg')
+if isfile(join('instance', 'flask_full.cfg')):
+    app.config.from_pyfile('flask_full.cfg')
+else:
+    app.config.from_pyfile('flask.cfg')
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
