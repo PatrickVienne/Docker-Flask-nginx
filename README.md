@@ -1,4 +1,5 @@
 [![build status](https://gitlab.com/patkennedy79/flask_recipe_app/badges/master/build.svg)](https://gitlab.com/patkennedy79/flask_recipe_app/commits/master)
+[![coverage report](https://gitlab.com/patkennedy79/flask_recipe_app/badges/master/coverage.svg)](https://gitlab.com/patkennedy79/flask_recipe_app/commits/master)
 [![say thanks](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/patkennedy79)
 ## Synopsis
 
