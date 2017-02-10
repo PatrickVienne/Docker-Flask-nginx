@@ -5,5 +5,7 @@ unittests:
     - cd web
     - pip install -q -r requirements.txt
     - nose2 -v project.tests.test_recipes_api
+    - coverage run project/tests/test_recipes_api.py
+    - coverage report project/recipes_api/*.py
   tags:
     - docker
