@@ -1,3 +1,5 @@
+[![build status](https://gitlab.com/patkennedy79/flask_recipe_app/badges/master/build.svg)](https://gitlab.com/patkennedy79/flask_recipe_app/commits/master)
+
 ## Synopsis
 
 Family Recipe web application for keeping track of your favorite recipes.
