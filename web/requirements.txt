@@ -4,6 +4,7 @@ bleach==1.4.3
 blinker==1.4
 cffi==1.7.0
 click==6.6
+cov-core==1.15.0
 coverage==4.2
 duvet==0.1.2
 Flask==0.11.1
