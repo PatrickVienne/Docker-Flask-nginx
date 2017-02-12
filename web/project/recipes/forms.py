@@ -25,8 +25,13 @@ class AddRecipeForm(Form):
                                         ('2', 'Rating 2'),
                                         ('3', 'Rating 3'),
                                         ('4', 'Rating 4'),
-                                        ('5', 'Rating 5')],
-                               default='3')
+                                        ('5', 'Rating 5'),
+                                        ('6', 'Rating 6'),
+                                        ('7', 'Rating 7'),
+                                        ('8', 'Rating 8'),
+                                        ('9', 'Rating 9'),
+                                        ('10', 'Rating 10')],
+                               default='5')
     recipe_image = FileField('Recipe Image', validators=[FileRequired(), FileAllowed(images, 'Images only!')])
     recipe_ingredients = PageDownField('Recipe Ingredients', validators=[DataRequired()], render_kw={"rows": 12, "cols": 100})
     recipe_steps = PageDownField('Recipe Steps', validators=[DataRequired()], render_kw={"rows": 12, "cols": 100})
@@ -49,8 +54,13 @@ class EditRecipeForm(Form):
                                         ('2', 'Rating 2'),
                                         ('3', 'Rating 3'),
                                         ('4', 'Rating 4'),
-                                        ('5', 'Rating 5')],
-                               default='3')
+                                        ('5', 'Rating 5'),
+                                        ('6', 'Rating 6'),
+                                        ('7', 'Rating 7'),
+                                        ('8', 'Rating 8'),
+                                        ('9', 'Rating 9'),
+                                        ('10', 'Rating 10')],
+                               default='5')
     recipe_image = FileField('Recipe Image', validators=[FileAllowed(images, 'Images only!')])
     recipe_ingredients = PageDownField('Recipe Ingredients', validators=[], render_kw={"rows": 12, "cols": 100})
     recipe_steps = PageDownField('Recipe Steps', validators=[], render_kw={"rows": 12, "cols": 100})
