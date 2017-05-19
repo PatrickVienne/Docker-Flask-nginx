@@ -12,6 +12,7 @@ from flask_mail import Message
 from threading import Thread
 from itsdangerous import URLSafeTimedSerializer
 from datetime import datetime
+from twilio.rest import TwilioRestClient
 
 from .forms import RegisterForm, LoginForm, EmailForm, PasswordForm
 from project import db, mail, app
@@ -80,6 +81,17 @@ def send_password_reset_email(user_email):
     send_email('Password Reset Requested', [user_email], html)
 
 
+def send_new_user_text_message(new_user_email):
+    client = TwilioRestClient(app.config['ACCOUNT_SID'], app.config['AUTH_TOKEN'])
+    message = client.messages.create(
+        body="Kennedy Family Recipes... new user registered: {}".format(new_user_email),  # Message body, if any
+        to=app.config['ADMIN_PHONE_NUMBER'],
+        from_=app.config['TWILIO_PHONE_NUMBER']
+    )
+    flash('Text message sent to {}: {}'.format(app.config['ADMIN_PHONE_NUMBER'], message.body), 'success')
+    return redirect(url_for('users.user_profile'))
+
+
 ################
 #### routes ####
 ################
@@ -96,6 +108,7 @@ def register():
                 db.session.commit()
                 login_user(new_user)
                 send_confirmation_email(new_user.email)
+                send_new_user_text_message(new_user.email)
                 flash('Thanks for registering!  Please check your email to confirm your email address.', 'success')
                 return redirect(url_for('recipes.user_recipes', recipe_type='All'))
             except IntegrityError:
@@ -274,4 +287,4 @@ def admin_view_users():
     else:
         users = User.query.order_by(User.id).all()
         return render_template('admin_view_users.html', users=users)
-    return redirect(url_for('stocks.watch_list'))
+    return redirect(url_for('users.login'))

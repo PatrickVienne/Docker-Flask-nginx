@@ -34,9 +34,9 @@ db.session.add(user3)
 db.session.commit()
 
 # Insert recipe data
-recipe1 = Recipe('Slow-Cooker Tacos', 'Delicious ground beef that has been simmering in taco seasoning and sauce.  Perfect with hard-shelled tortillas!', admin_user.id, False)
-recipe2 = Recipe('Hamburgers', 'Classic dish elevated with pretzel buns.', admin_user.id, True)
-recipe3 = Recipe('Mediterranean Chicken', 'Grilled chicken served with pitas, hummus, and sauted vegetables.', user1.id, True)
+recipe1 = Recipe('Slow-Cooker Tacos', 'Delicious ground beef that has been simmering in taco seasoning and sauce.  Perfect with hard-shelled tortillas!', user2.id, False)
+recipe2 = Recipe('Hamburgers', 'Classic dish elevated with pretzel buns.', user2.id, True)
+recipe3 = Recipe('Mediterranean Chicken', 'Grilled chicken served with pitas, hummus, and sauted vegetables.', user2.id, True)
 db.session.add(recipe1)
 db.session.add(recipe2)
 db.session.add(recipe3)
